@@ -18,8 +18,8 @@ export const Confidence = z.enum(["Chắc", "Khá chắc", "Chưa chắc"]);
 export const Basis = z.enum(["Đã học trước đó", "Suy luận", "Đoán", "Chưa có căn cứ"]);
 
 export const CreateSessionBody = z.object({
-  itemId: z.literal("tokenization-01"),
-  itemVersion: z.literal("2026-09-16.1").optional(),
+  itemId: z.literal("prompt-clarity-01"),
+  itemVersion: z.literal("2026-09-16.2").optional(),
   mode: z.literal("demo").optional()
 }).strict();
 export type CreateSessionBody = z.infer<typeof CreateSessionBody>;
@@ -70,7 +70,7 @@ export const CoachDraft = z.object({
 export type CoachDraft = z.infer<typeof CoachDraft>;
 
 export const ExplainClaims = z.object({
-  tokenIsNotWordOrLetter: z.boolean(),
-  tokenizerCanSplitDifferently: z.boolean(),
-  exactCountNeedsTool: z.boolean()
+  specificityBeatsCleverness: z.boolean(),
+  taskAndFormatFirst: z.boolean(),
+  extraPromptCanAddCostOrNoise: z.boolean()
 });

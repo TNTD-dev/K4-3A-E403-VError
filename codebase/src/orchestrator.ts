@@ -1,5 +1,5 @@
-import { answerKey, ITEM_ID, ITEM_VERSION, type MisconceptionId } from "./answer-key.js";
-import { getSource, publicItem, type ApprovedSource } from "./content.js";
+import { answerKey, ITEM_ID, ITEM_VERSION, SOURCE_VERSION, type MisconceptionId } from "./answer-key.js";
+import { getSource, publicItem, publicSourceCatalog, type ApprovedSource } from "./content.js";
 import { type D2Coach, type CoachResult } from "./coach.js";
 import { Store, type AttemptRow, type SessionRow } from "./db.js";
 import { evaluateAttempt, evaluateExplainBack, evaluateTransfer, reviewedHint, validTransition, verifyCoachDraft } from "./evaluator.js";
@@ -12,7 +12,10 @@ export class DomainError extends Error {
 export type ApiResponse = Record<string, unknown>;
 
 function citations(ids: string[]) {
-  return ids.flatMap((id) => { const source = getSource(id); return source ? [{ sourceId: source.sourceId, label: source.locator }] : []; });
+  return ids.flatMap((id) => {
+    const source = getSource(id);
+    return source ? [{ sourceId: source.sourceId, label: source.locator, locations: source.approvedLocations }] : [];
+  });
 }
 
 function publicSession(session: SessionRow, attempts: AttemptRow[]) {
@@ -22,6 +25,7 @@ function publicSession(session: SessionRow, attempts: AttemptRow[]) {
     state: session.state,
     hintLevel: session.hint_level,
     item: publicItem,
+    sources: publicSourceCatalog(),
     attempts: attempts.map((attempt) => ({ attemptNo: attempt.sequence, kind: attempt.kind, objectiveStatus: attempt.objective_status, errorCode: attempt.error_code }))
   };
 }
@@ -31,7 +35,7 @@ export class Orchestrator {
 
   createSession(): ApiResponse {
     const session = this.store.createSession(ITEM_ID, ITEM_VERSION);
-    this.store.appendEvent(session.id, "session_created", { item_id: ITEM_ID, item_version: ITEM_VERSION, source_version: "transcript-04-v1", mode: this.modelMode });
+    this.store.appendEvent(session.id, "session_created", { item_id: ITEM_ID, item_version: ITEM_VERSION, source_version: SOURCE_VERSION, mode: this.modelMode });
     return { ...publicSession(session, []), expiresAt: session.expires_at };
   }
 
@@ -63,7 +67,7 @@ export class Orchestrator {
     if (objective.status === "out_of_scope") {
       const next = this.transition(session, "out_of_scope");
       this.store.appendEvent(sessionId, "out_of_scope", { attempt_no: attemptNo, reason: objective.reason });
-      return { stateVersion: next.state_version, attempted: true, attemptNo, evaluation: { status: objective.status, errorCode: null }, coach: { status: "out_of_scope", message: "Câu hỏi này nằm ngoài bài tokenization và nguồn hiện có; VError không đoán thay bạn.", citations: [] }, next: { state: "out_of_scope" } };
+      return { stateVersion: next.state_version, attempted: true, attemptNo, evaluation: { status: objective.status, errorCode: null }, coach: { status: "out_of_scope", message: "Câu hỏi này nằm ngoài lát cắt Prompt Engineering đã được duyệt; VError không đoán thay bạn.", citations: [] }, next: { state: "out_of_scope" } };
     }
     if (objective.status === "unknown") {
       const next = this.transition(session, "source_review");
@@ -72,8 +76,8 @@ export class Orchestrator {
     }
     if (objective.status === "correct") {
       const next = this.transition(session, "explain_back");
-      this.store.appendEvent(sessionId, "diagnosis_returned", { attempt_no: attemptNo, objective_status: "correct", provider: "deterministic", citation_ids: ["T04-050"] });
-      return { stateVersion: next.state_version, attempted: true, attemptNo, evaluation: { status: "correct", errorCode: null }, coach: { status: "probe", message: "Lần thử này phù hợp với answer key. Một câu đúng chưa đủ chứng minh bạn đã hiểu.", citations: citations(["T04-050"]) }, next: { state: "explain_back" } };
+      this.store.appendEvent(sessionId, "diagnosis_returned", { attempt_no: attemptNo, objective_status: "correct", provider: "deterministic", citation_ids: ["D04-P08"] });
+      return { stateVersion: next.state_version, attempted: true, attemptNo, evaluation: { status: "correct", errorCode: null }, coach: { status: "probe", message: "Lần thử này phù hợp với answer key. Một câu đúng chưa đủ chứng minh bạn đã hiểu.", citations: citations(["D04-P08"]) }, next: { state: "explain_back" } };
     }
 
     const diagnosisCode = objective.errorCode as MisconceptionId;

@@ -6,7 +6,7 @@ import { Store } from "./db.js";
 import { DomainError, Orchestrator } from "./orchestrator.js";
 import { makeCoach, type D2Coach } from "./coach.js";
 import { CreateSessionBody, AttemptBody, HintBody, ExplainBody, TransferBody, StateVersionBody } from "./schemas.js";
-import { sourceVersionInfo } from "./content.js";
+import { publicItem, publicSourceCatalog, sourceVersionInfo } from "./content.js";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = join(here, "..");
@@ -33,6 +33,16 @@ export function buildApp(options: BuildOptions = {}): FastifyInstance {
     const body = CreateSessionBody.safeParse(request.body);
     if (!body.success) return reply.code(400).send({ requestId: request.id, error: "INVALID_BODY", message: body.error.message });
     return reply.code(201).send({ requestId: request.id, ...orchestrator.createSession() });
+  });
+
+  app.get("/api/v1/items/prompt-clarity-01", async (request, reply) => {
+    return reply.send({ requestId: request.id, item: publicItem, sourceVersion: sourceVersionInfo().sourceVersion, sources: publicSourceCatalog() });
+  });
+
+  app.get<{ Params: { sourceId: string } }>("/api/v1/sources/:sourceId", async (request, reply) => {
+    const source = publicSourceCatalog().find((candidate) => candidate.sourceId === request.params.sourceId);
+    if (!source) return reply.code(404).send({ requestId: request.id, error: "SOURCE_NOT_FOUND" });
+    return reply.send({ requestId: request.id, source });
   });
 
   app.get<{ Params: { sessionId: string } }>("/api/v1/sessions/:sessionId", async (request, reply) => {

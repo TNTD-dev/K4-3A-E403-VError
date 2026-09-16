@@ -1,26 +1,24 @@
-export const ITEM_ID = "tokenization-01" as const;
-export const ITEM_VERSION = "2026-09-16.1" as const;
-export const SOURCE_VERSION = "transcript-04-v1" as const;
+export const ITEM_ID = "prompt-clarity-01" as const;
+export const ITEM_VERSION = "2026-09-16.2" as const;
+export const SOURCE_VERSION = "day04-prompt-v1" as const;
 
 export const answerKey = {
-  expectedConcept: "not_necessarily",
+  expectedConcept: "specificity_over_length",
   requiredExplainClaimIds: [
-    "token_is_not_word_or_letter",
-    "tokenizer_can_split_differently",
-    "exact_count_needs_tool"
+    "specificity_beats_cleverness",
+    "task_and_format_first",
+    "extra_prompt_can_add_cost_or_noise"
   ],
-  transferExpected: "not_necessarily",
+  transferExpected: "clear_task_and_format",
   wrongChoiceToMisconception: {
-    always_one_word: "M_TOKEN_WORD_EQ",
-    english_only: "M_ENGLISH_ONLY",
-    fixed_count: "M_FIXED_COUNT",
-    context_as_meaning: "M_CONTEXT_AS_MEANING"
+    longer_is_better: "M_PROMPT_LONGER_BETTER",
+    more_context_is_better: "M_MORE_CONTEXT_ALWAYS_BETTER",
+    clever_role_is_better: "M_CLEVER_ROLE_ALWAYS_BETTER"
   },
   allowedSources: {
-    M_TOKEN_WORD_EQ: ["T04-049"],
-    M_ENGLISH_ONLY: ["T04-049", "T04-050"],
-    M_FIXED_COUNT: ["T04-049", "T04-050"],
-    M_CONTEXT_AS_MEANING: ["T04-051"]
+    M_PROMPT_LONGER_BETTER: ["D04-P07", "D04-P10"],
+    M_MORE_CONTEXT_ALWAYS_BETTER: ["D04-P08", "D04-P20"],
+    M_CLEVER_ROLE_ALWAYS_BETTER: ["D04-P07", "D04-P08"]
   },
   revealPolicy: {
     1: "hidden",

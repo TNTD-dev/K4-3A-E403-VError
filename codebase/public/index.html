@@ -144,6 +144,25 @@
     .card-top h2 { margin: 15px 0 7px; font-size: 29px; line-height: 1.16; letter-spacing: -.8px; }
     .card-top p { margin: 0; color: #d9e9f3; font-size: 14px; }
     .entry-card-body { padding: 27px 30px 30px; }
+    .day-context {
+      margin-bottom: 22px;
+      padding: 14px;
+      border: 1px solid #d7e7ef;
+      border-radius: 10px;
+      background: #f4faff;
+    }
+    .day-context-head { display: flex; align-items: start; justify-content: space-between; gap: 12px; }
+    .day-context-head small { display: block; margin-bottom: 3px; color: var(--blue-800); font-size: 10px; font-weight: 900; letter-spacing: .1em; }
+    .day-context-head strong { display: block; font-size: 15px; }
+    .day-context-status { padding: 5px 7px; border-radius: 5px; color: var(--green); background: var(--green-soft); font-size: 10px; font-weight: 900; letter-spacing: .06em; text-transform: uppercase; }
+    .day-context p { margin: 11px 0 12px; color: var(--ink-soft); font-size: 12px; line-height: 1.5; }
+    .material-list { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
+    .material-link { display: grid; grid-template-columns: 22px 1fr; gap: 8px; align-items: start; padding: 9px; border: 1px solid #d7e7ef; border-radius: 7px; color: var(--blue-800); background: white; text-align: left; }
+    .material-link:hover { border-color: var(--blue-700); background: var(--blue-100); }
+    .material-icon { grid-row: 1 / span 2; display: grid; place-items: center; width: 22px; height: 22px; border-radius: 6px; color: white; background: var(--blue-700); font-size: 11px; }
+    .material-link strong { font-size: 12px; }
+    .material-link small { color: #76909f; font-size: 10px; }
+    .material-note { margin: 10px 0 0 !important; color: #708a98 !important; font-size: 11px !important; }
     .task-label { margin-bottom: 9px; color: var(--red); font-size: 11px; font-weight: 900; letter-spacing: .13em; text-transform: uppercase; }
     .task-quote { margin: 0; padding: 17px 18px; border-left: 4px solid var(--red); border-radius: 7px; color: var(--ink); background: #f7fafc; font-size: 16px; font-weight: 680; line-height: 1.58; }
     .entry-meta { display: flex; align-items: center; gap: 12px; margin: 21px 0; color: var(--ink-soft); font-size: 13px; }
@@ -337,6 +356,9 @@
     .source-entry h3 { margin: 0 0 9px; color: var(--blue-800); font-size: 15px; }
     .source-entry blockquote { margin: 0; color: var(--ink-soft); font-size: 14px; line-height: 1.62; }
     .source-entry .source-note { margin: 11px 0 0; color: #83939d; font-size: 11px; }
+    .source-locations { display: grid; gap: 6px; margin-top: 15px; padding-top: 13px; border-top: 1px solid var(--line); }
+    .source-locations strong { color: var(--blue-800); font-size: 11px; }
+    .source-locations span { padding: 7px 8px; border-radius: 6px; color: var(--ink-soft); background: var(--blue-50); font-size: 11px; line-height: 1.35; }
     .toast { position: fixed; z-index: 70; right: 22px; bottom: 22px; display: none; max-width: 350px; padding: 13px 15px; border-radius: 8px; color: white; background: var(--blue-950); box-shadow: var(--shadow); font-size: 13px; font-weight: 720; }
     .toast.show { display: block; animation: toast-in .2s ease both; }
     @keyframes toast-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
@@ -395,7 +417,7 @@
       <span class="brand-name">V<span>Error</span></span>
     </a>
     <span class="header-divider" aria-hidden="true"></span>
-    <span class="header-context">D2 / Học từ lỗi trước / Tokenization checkpoint</span>
+    <span class="header-context">VLearn / Day 04 / LLM Foundation</span>
     <span class="header-spacer"></span>
     <span class="mock-badge">Bản mock có kiểm soát</span>
     <button class="restart-button" id="restartButton" type="button">Bắt đầu lại</button>
@@ -405,34 +427,44 @@
     <section class="entry-screen" id="entryScreen">
       <div class="entry-grid">
         <div>
-          <div class="eyebrow">Track D2 · productive failure</div>
-          <h1 class="hero-title">Biết mình sai ở đâu, rồi <em>tự sửa.</em></h1>
-          <p class="hero-lede">Đừng xem lý thuyết trước. Hãy để lộ cách bạn đang nghĩ, kiểm tra một giả định với nguồn đã duyệt, rồi chứng minh sự thay đổi bằng một câu giải thích và một tình huống mới.</p>
+          <div class="eyebrow">Track D2 · lớp active-learning cho VLearn Day 04</div>
+          <h1 class="hero-title">Đừng chỉ xem Day 04. <em>Hãy thử trước.</em></h1>
+          <p class="hero-lede">Slides và video bài giảng đã có sẵn trong VLearn. VError thêm một lớp học chủ động trước khi bạn xem, đưa bạn trở lại đúng đoạn cần kiểm tra, rồi đo sự thay đổi bằng explain-back và transfer.</p>
           <div class="evidence-strip" aria-label="Phạm vi phiên học">
-            <span class="evidence-pill"><strong>1</strong> bài tokenization</span>
-            <span class="evidence-pill"><strong>4</strong> nhịp học</span>
+            <span class="evidence-pill"><strong>Day 04</strong> LLM Foundation</span>
+            <span class="evidence-pill"><strong>1</strong> checkpoint</span>
             <span class="evidence-pill"><strong>~5</strong> phút</span>
             <span class="evidence-pill">không tính điểm</span>
           </div>
           <div class="how-it-works" aria-label="Cách VError hoạt động">
-            <div class="how-step"><small>01 / THỬ</small><strong>Nộp cách nghĩ</strong><span>Không cần đúng ngay.</span></div>
-            <div class="how-step"><small>02 / SỬA</small><strong>Kiểm tra giả định</strong><span>Hint có trích nguồn.</span></div>
-            <div class="how-step"><small>03 / CHUYỂN GIAO</small><strong>Giải thích lại</strong><span>Áp dụng vào case mới.</span></div>
+            <div class="how-step"><small>01 / THỬ TRƯỚC</small><strong>Nộp cách nghĩ</strong><span>Trước slide và video.</span></div>
+            <div class="how-step"><small>02 / QUAY LẠI</small><strong>Kiểm tra đúng đoạn</strong><span>Hint có trích nguồn.</span></div>
+            <div class="how-step"><small>03 / CHUYỂN GIAO</small><strong>Chứng minh đã hiểu</strong><span>Explain-back + case mới.</span></div>
           </div>
         </div>
 
         <article class="entry-card">
           <div class="card-top">
-            <div class="card-top-line"><small>D2 · TOKENIZATION CHECKPOINT</small><span class="scope-badge">1 bài</span></div>
+            <div class="card-top-line"><small>VLEARN · DAY 04 / LLM FOUNDATION</small><span class="scope-badge">1 checkpoint</span></div>
             <h2>Thử trước, chưa cần đúng.</h2>
-            <p>VError chỉ hỗ trợ lát cắt tokenization này.</p>
+            <p>VError là lớp active-learning trên bài học đã có sẵn.</p>
           </div>
           <div class="entry-card-body">
-            <div class="task-label">Bài bạn sẽ làm</div>
-            <p class="task-quote">“Câu ‘Xin chào Việt Nam’ có 3 từ nên chắc chắn có 3 token. Tokenizer chỉ tách theo từ.”<br><span class="quote-tail">Bạn đồng ý hay không? Sửa phát biểu trong 1-2 câu và nói vì sao.</span></p>
-            <div class="entry-meta"><span>Không tính điểm</span><span aria-hidden="true"></span><span>Không xem đáp án trước</span></div>
-            <button class="primary-button wide" id="startButton" type="button">Bắt đầu lần thử</button>
+            <div class="day-context" aria-label="Tài liệu của VLearn Day 04">
+              <div class="day-context-head"><div><small>DAY 04 / LLM FOUNDATION</small><strong>Bài học đã có sẵn trong VLearn</strong></div><span class="day-context-status">Đã có</span></div>
+              <p>VError không thay slide hoặc video. Nó chèn checkpoint này trước khi bạn xem nội dung thụ động.</p>
+              <div class="material-list">
+                <button class="material-link" type="button" data-material="slides"><span class="material-icon">▤</span><strong>Slide deck</strong><small>Prompt fundamentals · PDF p.7</small></button>
+                <button class="material-link" type="button" data-material="video"><span class="material-icon">▶</span><strong>Lecture video</strong><small>Timestamp unavailable</small></button>
+              </div>
+              <p class="material-note">Tài liệu mở sau lần thử đầu, đúng tại anchor mà VError chẩn đoán.</p>
+            </div>
+            <div class="task-label">Checkpoint trước khi xem nội dung</div>
+            <p class="task-quote">“Prompt càng dài, càng nhiều role và context thì model càng thông minh và kết quả càng tốt.”<br><span class="quote-tail">Bạn đồng ý hay không? Chỉ ra giả định cần sửa và viết lại prompt cho một task cụ thể trong 1-2 câu.</span></p>
+            <div class="entry-meta"><span>Không tính điểm</span><span aria-hidden="true"></span><span>Attempt trước slide/video</span></div>
+            <button class="primary-button wide" id="startButton" type="button">Bắt đầu checkpoint</button>
             <div class="entry-reassurance">Nếu chưa biết, chọn “Chưa có căn cứ”. VError sẽ nói chưa chắc thay vì đoán lỗi của bạn.</div>
+            <div class="entry-reassurance">Sau attempt, VError mở đúng PDF anchor đã duyệt; transcript hoặc video sẽ hiện unavailable nếu chưa có vị trí tương ứng.</div>
             <details class="demo-routes">
               <summary>Thử nhanh một nhánh an toàn trong demo</summary>
               <div class="demo-route-list">
@@ -482,9 +514,10 @@
           <section class="rail-card">
             <h2>Nguồn đã duyệt</h2>
             <div class="rail-source-list">
-              <button class="source-link" type="button" data-source="T04-049">Transcript [T04-049]</button>
-              <button class="source-link" type="button" data-source="T04-050">Transcript [T04-050]</button>
-              <button class="source-link" type="button" data-source="T04-051">Transcript [T04-051]</button>
+              <button class="source-link" type="button" data-source="D04-P07">PDF page 7 · specificity</button>
+              <button class="source-link" type="button" data-source="D04-P08">PDF page 8 · Task + Format</button>
+              <button class="source-link" type="button" data-source="D04-P10">PDF page 10 · token budget</button>
+              <button class="source-link" type="button" data-source="D04-P20">PDF page 20 · context cần thiết</button>
             </div>
           </section>
         </aside>
@@ -506,23 +539,33 @@
     "use strict";
 
     const sourceMap = {
-      "T04-049": {
-        label: "Transcript [T04-049]",
-        title: "Token là một đơn vị tính",
-        quote: "Token là một đơn vị tính, không phải từ hay chữ cái. Cách chia token có thể thay đổi theo ngôn ngữ.",
-        note: "Nguồn nội dung: Transcript-04 · đoạn đã được nhóm duyệt."
+      "D04-P07": {
+        label: "PDF p.7",
+        title: "Specificity beats cleverness",
+        quote: "Nguyên tắc vàng: Specificity beats cleverness. Prompt ngắn nhưng rõ nghĩa thường tốt hơn prompt dài mà lan man. Prompt tốt cần rõ task, context, constraint, format.",
+        note: "Nguồn: Prompt Engineering & Tool Calling.pdf · tài liệu Day 04 do captain cung cấp.",
+        locations: ["Slide deck · Day 04 · PDF p.7", "Transcript segment unavailable for provided PDF", "Lecture video · timestamp unavailable · PDF p.7 là anchor đã duyệt"]
       },
-      "T04-050": {
-        label: "Transcript [T04-050]",
-        title: "Ước tính và đếm chính xác",
-        quote: "Có thể dùng công thức quy đổi nhanh để ước tính, nhưng muốn biết chính xác số token thì cần dùng tool. Cách chia token có thể khác giữa các phiên bản model.",
-        note: "Nguồn nội dung: Transcript-04 · đoạn đã được nhóm duyệt."
+      "D04-P08": {
+        label: "PDF p.8",
+        title: "Task + Format trước",
+        quote: "Bắt đầu với Task + Format. Chỉ thêm Role hoặc Context khi chúng thực sự cải thiện chất lượng hoặc tính nhất quán.",
+        note: "Nguồn: Prompt Engineering & Tool Calling.pdf · tài liệu Day 04 do captain cung cấp.",
+        locations: ["Slide deck · Day 04 · PDF p.8", "Transcript segment unavailable for provided PDF", "Lecture video · timestamp unavailable · PDF p.8 là anchor đã duyệt"]
       },
-      "T04-051": {
-        label: "Transcript [T04-051]",
-        title: "Context không phải cách tách token",
-        quote: "Context là toàn bộ thông tin model có thể tiêu thụ trong một lần. Context window là giới hạn của nội dung token mà model có thể nhận.",
-        note: "Nguồn nội dung: Transcript-04 · đoạn đã được nhóm duyệt."
+      "D04-P10": {
+        label: "PDF p.10",
+        title: "Token budget awareness",
+        quote: "Prompt dài hơn không đồng nghĩa prompt tốt hơn. Mỗi token thừa làm tăng chi phí, latency, và đôi khi cả nhiễu. Hãy ưu tiên instruction rõ và output contract rõ.",
+        note: "Nguồn: Prompt Engineering & Tool Calling.pdf · tài liệu Day 04 do captain cung cấp.",
+        locations: ["Slide deck · Day 04 · PDF p.10", "Transcript segment unavailable for provided PDF", "Lecture video · timestamp unavailable · PDF p.10 là anchor đã duyệt"]
+      },
+      "D04-P20": {
+        label: "PDF p.20",
+        title: "Chọn đúng context",
+        quote: "Điều quan trọng không phải nhét bao nhiêu context, mà là chọn đúng context cần thiết.",
+        note: "Nguồn: Prompt Engineering & Tool Calling.pdf · tài liệu Day 04 do captain cung cấp.",
+        locations: ["Slide deck · Day 04 · PDF p.20", "Transcript segment unavailable for provided PDF", "Lecture video · timestamp unavailable · PDF p.20 là anchor đã duyệt"]
       }
     };
 
@@ -666,7 +709,7 @@
       app.events = [];
       flowScreen.hidden = true;
       entryScreen.hidden = false;
-      logEvent("entry_viewed", { task_id: "tokenization-01", fixture_version: "d2-token-v1", source_version: "transcript-04-v1" });
+      logEvent("entry_viewed", { task_id: "prompt-clarity-01", fixture_version: "d2-prompt-v1", source_version: "day04-prompt-v1" });
       window.scrollTo({ top: 0, behavior: "auto" });
     }
 
@@ -695,8 +738,8 @@
         <div class="content-kicker"><span>${isRetry ? `Lần thử ${app.attempts.length + 1}` : "Lần thử 1"}</span><span class="state-chip">Answer key không hiển thị</span></div>
         <div class="statement-box">
           <small>PHÁT BIỂU CẦN KIỂM TRA</small>
-          <p>Một bạn nói: “Câu ‘Xin chào Việt Nam’ có 3 từ nên chắc chắn có 3 token. Tokenizer chỉ tách theo từ.”</p>
-          <div class="quote-tail">Hãy viết bạn đồng ý hay không đồng ý, sửa phát biểu trong 1-2 câu, rồi nói vì sao.</div>
+          <p>Một bạn viết: “Prompt càng dài, càng nhiều role và context thì model càng thông minh và kết quả càng tốt.”</p>
+          <div class="quote-tail">Hãy viết bạn đồng ý hay không đồng ý, chỉ ra giả định cần sửa và viết lại prompt cho một task cụ thể trong 1-2 câu.</div>
         </div>
         <form id="attemptForm" class="form-grid" novalidate>
           <div class="field">
@@ -721,7 +764,7 @@
             <div class="form-actions"><button class="secondary-button" type="button" data-action="abstain">Mình chưa có đủ căn cứ</button><button class="primary-button" type="submit">Gửi ${isRetry ? `lần thử ${app.attempts.length + 1}` : "lần thử 1"}</button></div>
           </div>
         </form>
-        <p class="disclaimer">VError chỉ chẩn đoán trong bài tokenization này. Input mơ hồ hoặc ngoài phạm vi sẽ được dừng an toàn.</p>
+        <p class="disclaimer">VError chỉ chẩn đoán trong lát cắt Prompt Engineering này. Input mơ hồ hoặc ngoài phạm vi sẽ được dừng an toàn.</p>
       </article>`;
     }
 
@@ -738,8 +781,8 @@
       return `<article class="content-card">
         <div class="content-kicker"><span>Chẩn đoán có điều kiện</span><span class="state-chip">độ chắc của VError: cao</span></div>
         <p class="diagnosis-intro">Mình không chấm bạn “sai” chung chung. Mình chỉ gọi tên một giả định mà bài làm đang cho thấy và có đoạn nguồn hỗ trợ.</p>
-        <div class="diagnosis-card"><small>Một giả định cần kiểm tra · M1</small><h2>“Một từ luôn tương ứng với một token.”</h2><p>Mình thấy bài làm của bạn đang coi số từ và số token là cùng một đơn vị. Mình chưa đưa đáp án ngay.</p></div>
-        <div class="evidence-card"><div><small>Nguồn để kiểm tra</small><strong>${sourceButton("T04-049")}</strong></div><button class="text-button" type="button" data-source="T04-049">Mở đoạn nguồn</button></div>
+        <div class="diagnosis-card"><small>Một giả định cần kiểm tra · M1</small><h2>“Prompt càng dài thì luôn càng tốt.”</h2><p>Mình thấy bài làm của bạn đang đồng nhất độ dài và số thành phần với chất lượng prompt. Mình chưa đưa đáp án ngay.</p></div>
+        <div class="evidence-card"><div><small>Nguồn để kiểm tra</small><strong>${sourceButton("D04-P07")}</strong></div><button class="text-button" type="button" data-source="D04-P07">Mở nguồn</button></div>
         <div class="guardrail">Answer reveal đang tắt. Hãy nhận một gợi ý hoặc tự sửa ngay; không có nút “xem đáp án” ở bước này.</div>
         <div class="action-row"><button class="primary-button" type="button" data-action="hint" data-level="1">Nhận gợi ý 1</button><button class="secondary-button" type="button" data-action="retry">Tự sửa ngay</button><button class="text-button push-right" type="button" data-action="abstain">Mình chưa có đủ căn cứ</button></div>
       </article>`;
@@ -748,15 +791,15 @@
     function renderHint() {
       const level = app.hintLevel;
       let content = "";
-      let sources = ["T04-049"];
+      let sources = ["D04-P07"];
       if (level === 1) {
-        content = `<p>Đừng đếm số từ vội. Trong ${sourceButton("T04-049")}, token được mô tả là một đơn vị tính và được phân biệt với từ và chữ cái.</p><p class="hint-question">Hãy chỉ ra phần nào trong phát biểu của bạn đang coi hai khái niệm này là một.</p>`;
+        content = `<p>Trong ${sourceButton("D04-P07")}, hãy tìm sự khác nhau giữa prompt rõ nghĩa và prompt “clever”. Thành phần nào giúp model biết đúng việc cần làm?</p><p class="hint-question">Hãy chỉ ra vì sao độ dài tự nó chưa phải là tiêu chí chất lượng.</p>`;
       } else if (level === 2) {
-        sources = ["T04-049", "T04-050"];
-        content = `<p>Hãy thử một phản ví dụ. Một từ có thể bị chẻ thành các token, và cách chẻ có thể khác theo ngôn ngữ hoặc model.</p><p class="hint-question">Nếu chỉ biết số từ, bạn đã đủ thông tin để biết chính xác số token chưa?</p>`;
+        sources = ["D04-P08", "D04-P20"];
+        content = `<p>${sourceButton("D04-P08")} khuyên bắt đầu với Task + Format. ${sourceButton("D04-P20")} nhắc chọn đúng context cần thiết, không nhét càng nhiều càng tốt.</p><p class="hint-question">Nếu Role hoặc Context không cải thiện chất lượng hay tính nhất quán, bạn sẽ giữ hay bỏ phần đó?</p>`;
       } else {
-        sources = ["T04-049", "T04-050"];
-        content = `<p>Token là một đơn vị tính của mô hình, không phải từ hoặc chữ cái.</p><p>Một từ có thể bị tách thành các token, nên không thể suy ra chính xác số token chỉ từ số từ. Muốn biết chính xác, hãy dùng công cụ tokenizer phù hợp.</p>`;
+        sources = ["D04-P07", "D04-P08", "D04-P10"];
+        content = `<p>Prompt dài hơn không tự làm prompt tốt hơn. Hãy bắt đầu với Task + Format, rồi chỉ thêm Role hoặc Context khi chúng thực sự cải thiện chất lượng hoặc tính nhất quán.</p><p>Nếu phần thêm không cần thiết, token thừa có thể tăng chi phí, latency và nhiễu. Bạn vẫn cần tự viết lại prompt cho một task cụ thể.</p>`;
       }
       const title = level === 3 ? "Giải thích ngắn" : `Gợi ý ${level}/3`;
       const next = level < 3 ? `<button class="secondary-button" type="button" data-action="hint" data-level="${level + 1}">Gợi ý tiếp theo</button>` : "";
@@ -786,16 +829,16 @@
     }
 
     function renderClarify() {
-      return `<article class="content-card narrow"><div class="content-kicker"><span>Cần làm rõ trước</span><span class="state-chip">không gán lỗi</span></div><div class="clarify-card"><h2>Mình chưa đủ thông tin để gọi tên lỗi.</h2><p>Bạn đang nói “token” theo nghĩa đơn vị tính, từ, hay số ký tự? Chọn một ý hoặc viết thêm một câu giải thích.</p></div><div class="action-row"><button class="primary-button" type="button" data-action="continue-draft">Viết thêm một câu “vì sao”</button><button class="secondary-button" type="button" data-action="abstain">Chọn Chưa có căn cứ</button></div></article>`;
+      return `<article class="content-card narrow"><div class="content-kicker"><span>Cần làm rõ trước</span><span class="state-chip">không gán lỗi</span></div><div class="clarify-card"><h2>Mình chưa đủ thông tin để gọi tên lỗi.</h2><p>Bạn đang nói prompt “tốt” theo độ dài, Role, Context, Task hay Format? Chọn một tiêu chí hoặc viết thêm một câu giải thích.</p></div><div class="action-row"><button class="primary-button" type="button" data-action="continue-draft">Viết thêm một câu “vì sao”</button><button class="secondary-button" type="button" data-action="abstain">Chọn Chưa có căn cứ</button></div></article>`;
     }
 
     function renderNoBasis() {
       const started = app.attempts.length > 0;
-      return `<article class="content-card narrow"><div class="content-kicker"><span>Safe fallback</span><span class="state-chip">không chẩn đoán</span></div><div class="safe-card"><span class="safe-label">No-basis / abstain</span><h2>Mình chưa có đủ căn cứ để kết luận bạn đang mắc lỗi nào.</h2><p>Mình sẽ không đoán thay bạn. Bạn có thể mở đoạn nguồn đã duyệt, viết lại cách nghĩ, hoặc lưu câu hỏi để hỏi người dạy.</p></div><div class="action-row"><button class="primary-button" type="button" data-source="T04-049">Mở nguồn đã duyệt</button><button class="secondary-button" type="button" data-action="retry">${started ? "Thử lại" : "Viết thử lại"}</button><button class="text-button" type="button" data-action="save-question">Lưu câu hỏi này</button></div><p class="disclaimer">Không có misconception label màu đỏ và không có answer reveal khi evidence_ids rỗng hoặc classifier confidence thấp.</p></article>`;
+      return `<article class="content-card narrow"><div class="content-kicker"><span>Safe fallback</span><span class="state-chip">không chẩn đoán</span></div><div class="safe-card"><span class="safe-label">No-basis / abstain</span><h2>Mình chưa có đủ căn cứ để kết luận bạn đang mắc lỗi nào.</h2><p>Mình sẽ không đoán thay bạn. Bạn có thể mở slide đã duyệt, viết lại cách nghĩ, hoặc lưu câu hỏi để hỏi người dạy.</p></div><div class="action-row"><button class="primary-button" type="button" data-source="D04-P07">Mở slide đã duyệt</button><button class="secondary-button" type="button" data-action="retry">${started ? "Thử lại" : "Viết thử lại"}</button><button class="text-button" type="button" data-action="save-question">Lưu câu hỏi này</button></div><p class="disclaimer">Không có misconception label màu đỏ và không có answer reveal khi evidence_ids rỗng hoặc classifier confidence thấp.</p></article>`;
     }
 
     function renderOutOfScope() {
-      return `<article class="content-card narrow"><div class="content-kicker"><span>Scope boundary</span><span class="state-chip">out-of-scope</span></div><div class="oos-card"><h2>Câu hỏi này nằm ngoài bài tokenization và nguồn hiện có.</h2><p>VError không đoán giá API, viết code tokenizer, hay mở rộng sang attention trong phiên này. Mình giữ lại câu hỏi để bạn hỏi người dạy thay vì trả lời không có căn cứ.</p></div><div class="action-row"><button class="primary-button" type="button" data-action="back-task">Quay lại bài tokenization</button><button class="secondary-button" type="button" data-action="save-question">Lưu câu hỏi này</button></div></article>`;
+      return `<article class="content-card narrow"><div class="content-kicker"><span>Scope boundary</span><span class="state-chip">out-of-scope</span></div><div class="oos-card"><h2>Câu hỏi này nằm ngoài lát cắt Prompt Engineering hiện có.</h2><p>VError không đoán giá API, viết code, hay mở rộng sang kiến thức ngoài nguồn Day 04 đã duyệt. Mình giữ lại câu hỏi để bạn hỏi người dạy thay vì trả lời không có căn cứ.</p></div><div class="action-row"><button class="primary-button" type="button" data-action="back-task">Quay lại bài Prompt Engineering</button><button class="secondary-button" type="button" data-action="save-question">Lưu câu hỏi này</button></div></article>`;
     }
 
     function renderCorrect() {
@@ -805,18 +848,18 @@
 
     function renderExplain() {
       const feedback = app.feedback ? `<div class="feedback-card"><strong>Chưa đủ một ý để chuyển tiếp.</strong>${escapeHtml(app.feedback)}</div>` : "";
-      return `<article class="content-card"><div class="content-kicker"><span>Explain-back</span><span class="state-chip">không chép nguồn</span></div><div class="statement-box"><small>GIẢI THÍCH CHO MỘT BẠN MỚI</small><p>Token khác từ hoặc chữ cái ở điểm nào, và vì sao không nên lấy số từ để đo chính xác số token?</p></div>${feedback}<form id="explainForm" class="form-grid" novalidate><div class="field"><label for="explainInput">Lời giải thích của bạn <small>2-4 câu</small></label><textarea id="explainInput" name="explain" placeholder="Giải thích bằng lời của bạn, không chép nguyên đoạn nguồn.">${escapeHtml(app.explainText)}</textarea></div><div class="form-footer"><div class="form-help"><strong>Tiêu chí:</strong><span>đơn vị · cách tách thay đổi · đo chính xác</span></div><div class="form-actions"><button class="primary-button" type="submit">Kiểm tra explain-back</button></div></div></form></article>`;
+      return `<article class="content-card"><div class="content-kicker"><span>Explain-back</span><span class="state-chip">không chép nguồn</span></div><div class="statement-box"><small>GIẢI THÍCH CHO MỘT BẠN MỚI</small><p>Giải thích cho một bạn mới vì sao prompt rõ Task + Format không đồng nghĩa prompt dài hơn, và khi nào Role hoặc Context nên được thêm.</p></div>${feedback}<form id="explainForm" class="form-grid" novalidate><div class="field"><label for="explainInput">Lời giải thích của bạn <small>2-4 câu</small></label><textarea id="explainInput" name="explain" placeholder="Giải thích bằng lời của bạn, không chép nguyên đoạn nguồn.">${escapeHtml(app.explainText)}</textarea></div><div class="form-footer"><div class="form-help"><strong>Tiêu chí:</strong><span>specificity · Task + Format · chi phí hoặc nhiễu</span></div><div class="form-actions"><button class="primary-button" type="submit">Kiểm tra explain-back</button></div></div></form></article>`;
     }
 
     function renderTransfer() {
       const feedback = app.feedback ? `<div class="feedback-card"><strong>Hãy tìm điều kiện làm câu trả lời thay đổi.</strong>${escapeHtml(app.feedback)}</div>` : "";
-      return `<article class="content-card"><div class="content-kicker"><span>Tình huống mới</span><span class="state-chip">transfer check</span></div><div class="statement-box"><small>ÁP DỤNG VÀO BIẾN THỂ</small><p>Hai tokenizer khác nhau nhận cùng một prompt tiếng Việt. Chúng có nhất thiết tạo cùng số token không?</p><div class="quote-tail">Hãy trả lời và nêu điều kiện khiến câu trả lời của bạn đúng.</div></div>${feedback}<form id="transferForm" class="form-grid" novalidate><div class="field"><label for="transferInput">Câu trả lời</label><textarea id="transferInput" name="transfer" placeholder="Nêu kết luận của bạn.">${escapeHtml(app.transferText)}</textarea></div><div class="field"><label for="transferReasoning">Lý do / điều kiện</label><textarea id="transferReasoning" name="transferReasoning" placeholder="Điều gì trong cách tách token có thể thay đổi?">${escapeHtml(app.transferReasoning)}</textarea></div><div class="form-footer"><div class="form-help"><strong>Case mới.</strong><span>Không lặp nguyên answer key.</span></div><div class="form-actions"><button class="primary-button" type="submit">Kiểm tra chuyển giao</button></div></div></form></article>`;
+      return `<article class="content-card"><div class="content-kicker"><span>Tình huống mới</span><span class="state-chip">transfer check</span></div><div class="statement-box"><small>ÁP DỤNG VÀO BIẾN THỂ</small><p>Bạn cần agent tóm tắt support ticket thành JSON có 3 trường. Giữa một prompt dài với nhiều persona/context và một prompt rõ Task + Format, bạn chọn hướng nào?</p><div class="quote-tail">Hãy nêu điều kiện khiến lựa chọn của bạn đúng.</div></div>${feedback}<form id="transferForm" class="form-grid" novalidate><div class="field"><label for="transferInput">Câu trả lời</label><textarea id="transferInput" name="transfer" placeholder="Nêu kết luận của bạn.">${escapeHtml(app.transferText)}</textarea></div><div class="field"><label for="transferReasoning">Lý do / điều kiện</label><textarea id="transferReasoning" name="transferReasoning" placeholder="Vì sao Task + Format và context cần thiết giúp lựa chọn này phù hợp?">${escapeHtml(app.transferReasoning)}</textarea></div><div class="form-footer"><div class="form-help"><strong>Case mới.</strong><span>Không lặp nguyên answer key.</span></div><div class="form-actions"><button class="primary-button" type="submit">Kiểm tra chuyển giao</button></div></div></form></article>`;
     }
 
     function renderResult() {
       const log = JSON.stringify(app.events, null, 2);
       const correction = app.attempts.length > 1 ? "Tự sửa attempt 1 sau khi kiểm tra nguồn." : "Kiểm tra câu trả lời ban đầu bằng explain-back thay vì chốt đúng ngay.";
-      return `<article class="content-card narrow"><div class="content-kicker"><span>Mastery result</span><span class="state-chip">trong phiên này</span></div><div class="result-hero"><div class="result-mark">✓</div><h2>Đã chứng minh trong phiên này</h2><p>Không phải “đã hiểu hoàn toàn”. Đây là những bằng chứng vừa được quan sát.</p></div><ul class="result-list"><li>${correction}</li><li>Giải thích lại được ý chính bằng lời của bạn.</li><li>Áp dụng được vào một tình huống tokenizer khác.</li></ul><div class="metrics-grid"><div class="metric"><strong>${app.attempts.length}</strong><span>lần thử đã ghi</span></div><div class="metric"><strong>${app.hintLevel || 0}</strong><span>hint trước khi sửa</span></div><div class="metric"><strong>Đạt</strong><span>explain-back</span></div><div class="metric"><strong>Đạt</strong><span>transfer check</span></div></div><div class="evidence-card"><div><small>Nguồn đã dùng</small><strong>${sourceButton("T04-049")} ${sourceButton("T04-050")}</strong></div><button class="text-button" type="button" data-source="T04-050">Mở nguồn</button></div><div class="next-action"><div><small>Bước tiếp theo</small><strong>Ôn lại đoạn [T04-049]-[T04-050] và làm một biến thể ngắn.</strong></div><button class="secondary-button" type="button" data-action="next-action">Mở nguồn</button></div><details class="log-details"><summary>Nhật ký phiên mock · ${app.events.length} sự kiện</summary><pre>${escapeHtml(log)}</pre></details><div class="action-row" style="margin-top:21px"><button class="text-button" type="button" data-action="save-history">Lưu lỗi này vào lịch sử của tôi</button><button class="secondary-button push-right" type="button" data-action="restart">Kết thúc phiên</button></div></article>`;
+      return `<article class="content-card narrow"><div class="content-kicker"><span>Mastery result</span><span class="state-chip">trong phiên này</span></div><div class="result-hero"><div class="result-mark">✓</div><h2>Đã chứng minh trong phiên này</h2><p>Không phải “đã hiểu hoàn toàn”. Đây là những bằng chứng vừa được quan sát.</p></div><ul class="result-list"><li>${correction}</li><li>Giải thích lại được ý chính bằng lời của bạn.</li><li>Áp dụng được vào một tình huống prompt khác.</li></ul><div class="metrics-grid"><div class="metric"><strong>${app.attempts.length}</strong><span>lần thử đã ghi</span></div><div class="metric"><strong>${app.hintLevel || 0}</strong><span>hint trước khi sửa</span></div><div class="metric"><strong>Đạt</strong><span>explain-back</span></div><div class="metric"><strong>Đạt</strong><span>transfer check</span></div></div><div class="evidence-card"><div><small>Nguồn đã dùng</small><strong>${sourceButton("D04-P07")} ${sourceButton("D04-P08")} ${sourceButton("D04-P10")}</strong></div><button class="text-button" type="button" data-source="D04-P10">Mở nguồn</button></div><div class="next-action"><div><small>Bước tiếp theo</small><strong>Ôn lại PDF p.7-p.10 và làm một biến thể prompt ngắn.</strong></div><button class="secondary-button" type="button" data-action="next-action">Mở nguồn</button></div><details class="log-details"><summary>Nhật ký phiên mock · ${app.events.length} sự kiện</summary><pre>${escapeHtml(log)}</pre></details><div class="action-row" style="margin-top:21px"><button class="text-button" type="button" data-action="save-history">Lưu lỗi này vào lịch sử của tôi</button><button class="secondary-button push-right" type="button" data-action="restart">Kết thúc phiên</button></div></article>`;
     }
 
     function gatherForm(form) {
@@ -830,9 +873,9 @@
     }
 
     function openSource(sourceId) {
-      const source = sourceMap[sourceId] || sourceMap["T04-049"];
+      const source = sourceMap[sourceId] || sourceMap["D04-P07"];
       document.getElementById("drawerTitle").textContent = source.label;
-      document.getElementById("drawerContent").innerHTML = `<article class="source-entry"><h3>${escapeHtml(source.title)}</h3><blockquote>“${escapeHtml(source.quote)}”</blockquote><p class="source-note">${escapeHtml(source.note)}</p></article><p class="microcopy">Chỉ các claim có source ID trong source map mới được phép xuất hiện trong hint của lát cắt này.</p>`;
+      document.getElementById("drawerContent").innerHTML = `<article class="source-entry"><h3>${escapeHtml(source.title)}</h3><blockquote>“${escapeHtml(source.quote)}”</blockquote><p class="source-note">${escapeHtml(source.note)}</p><div class="source-locations"><strong>Vị trí đã duyệt trong học liệu</strong>${source.locations.map((location) => `<span>${escapeHtml(location)}</span>`).join("")}</div></article><p class="microcopy">Chỉ các claim có source ID trong source map mới được phép xuất hiện trong hint của lát cắt này.</p>`;
       document.getElementById("sourceBackdrop").classList.add("open");
       document.getElementById("sourceDrawer").setAttribute("aria-hidden", "false");
       logEvent("source_opened", { evidence_ids: [sourceId] });
@@ -952,7 +995,7 @@
         try {
           const body = await apiFetch("/sessions", {
             method: "POST",
-            body: JSON.stringify({ itemId: "tokenization-01", itemVersion: "2026-09-16.1", mode: "demo" })
+            body: JSON.stringify({ itemId: "prompt-clarity-01", itemVersion: "2026-09-16.2", mode: "demo" })
           });
           app.sessionId = body.sessionId;
           app.stateVersion = body.stateVersion;
@@ -961,16 +1004,16 @@
           app.lastCoach = null;
           app.lastEvaluation = null;
           app.startedAt = Date.now();
-          logEvent("attempt_started", { task_id: "tokenization-01", fixture_version: "d2-token-v1", source_version: "transcript-04-v1" });
+          logEvent("attempt_started", { task_id: "prompt-clarity-01", fixture_version: "d2-prompt-v1", source_version: "day04-prompt-v1" });
           if (!scenario) {
             setState("attempt");
             return;
           }
           const scenarioData = {
             "no-basis": { answer: "", reasoning: "", confidence: "Chưa chắc", basis: "Chưa có căn cứ" },
-            clarify: { answer: "3 token", reasoning: "", confidence: "Chưa chắc", basis: "Suy luận" },
+            clarify: { answer: "Prompt này tốt hơn", reasoning: "", confidence: "Chưa chắc", basis: "Suy luận" },
             "out-of-scope": { answer: "Giá API bao nhiêu?", reasoning: "Mình muốn biết chi phí cụ thể.", confidence: "Chưa chắc", basis: "Suy luận" },
-            "correct-low": { answer: "Không nhất thiết, vì số token không chỉ dựa vào số từ.", reasoning: "Mình nhớ mang máng tokenizer có thể tách khác nhau.", confidence: "Chưa chắc", basis: "Đoán" }
+            "correct-low": { answer: "Không nhất thiết, prompt rõ việc cần làm có thể tốt hơn prompt dài.", reasoning: "Mình nhớ là prompt cần rõ nhưng chưa chắc.", confidence: "Chưa chắc", basis: "Đoán" }
           }[scenario];
           await submitToServer(scenarioData, "attemptForm");
         } catch (error) {
@@ -984,12 +1027,12 @@
 
       renderDiagnosis = function renderServerDiagnosis() {
         const coach = app.lastCoach || {};
-        const code = coach.diagnosisCode || "M_TOKEN_WORD_EQ";
+        const code = coach.diagnosisCode || "M_PROMPT_LONGER_BETTER";
         return `<article class="content-card">
           <div class="content-kicker"><span>Chẩn đoán có điều kiện</span><span class="state-chip">${coach.fallback ? "offline fallback" : `độ chắc của VError: ${escapeHtml(coach.confidence || "cao")}`}</span></div>
           <p class="diagnosis-intro">Mình không chấm bạn “sai” chung chung. Mình chỉ gọi tên một giả định mà bài làm đang cho thấy và có đoạn nguồn hỗ trợ.</p>
-          <div class="diagnosis-card"><small>Một giả định cần kiểm tra · ${escapeHtml(code)}</small><h2>“Một từ luôn tương ứng với một token.”</h2><p>${escapeHtml(coach.message || "Mình thấy bài làm của bạn đang dùng giả định này. Mình chưa đưa đáp án ngay.")}</p></div>
-          <div class="evidence-card"><div><small>Nguồn để kiểm tra</small><strong>${citationMarkup(coach.citations || [{ sourceId: "T04-049", label: "Transcript-04, đoạn 49" }])}</strong></div><button class="text-button" type="button" data-source="T04-049">Mở đoạn nguồn</button></div>
+          <div class="diagnosis-card"><small>Một giả định cần kiểm tra · ${escapeHtml(code)}</small><h2>“Prompt càng dài thì luôn càng tốt.”</h2><p>${escapeHtml(coach.message || "Mình thấy bài làm của bạn đang dùng giả định này. Mình chưa đưa đáp án ngay.")}</p></div>
+          <div class="evidence-card"><div><small>Nguồn để kiểm tra</small><strong>${citationMarkup(coach.citations || [{ sourceId: "D04-P07", label: "PDF p.7 · Specificity beats cleverness" }])}</strong></div><button class="text-button" type="button" data-source="D04-P07">Mở nguồn</button></div>
           <div class="guardrail">Answer reveal đang tắt. Hãy nhận một gợi ý hoặc tự sửa ngay; không có nút “xem đáp án” ở bước này.</div>
           <div class="action-row"><button class="primary-button" type="button" data-action="hint" data-level="${Math.min(3, Math.max(1, app.hintLevel + 1))}">Nhận gợi ý ${Math.min(3, Math.max(1, app.hintLevel + 1))}</button><button class="secondary-button" type="button" data-action="retry">Tự sửa ngay</button><button class="text-button push-right" type="button" data-action="abstain">Mình chưa có đủ căn cứ</button></div>
         </article>`;
@@ -999,7 +1042,7 @@
         const coach = app.lastCoach || {};
         const hint = coach.hint || {};
         const level = Number(hint.level || app.hintLevel || 1);
-        const sources = hint.citations || (level === 1 ? [{ sourceId: "T04-049", label: "Transcript-04, đoạn 49" }] : [{ sourceId: "T04-049", label: "Transcript-04, đoạn 49" }, { sourceId: "T04-050", label: "Transcript-04, đoạn 50" }]);
+        const sources = hint.citations || (level === 1 ? [{ sourceId: "D04-P07", label: "PDF p.7 · Specificity beats cleverness" }] : level === 2 ? [{ sourceId: "D04-P08", label: "PDF p.8 · Task + Format" }, { sourceId: "D04-P20", label: "PDF p.20 · context cần thiết" }] : [{ sourceId: "D04-P07", label: "PDF p.7 · Specificity beats cleverness" }, { sourceId: "D04-P08", label: "PDF p.8 · Task + Format" }, { sourceId: "D04-P10", label: "PDF p.10 · token budget" }]);
         const next = level < 3 ? `<button class="secondary-button" type="button" data-action="hint" data-level="${level + 1}">Gợi ý tiếp theo</button>` : "";
         return `<article class="content-card">
           <div class="content-kicker"><span>Chẩn đoán M1 · có căn cứ</span><span class="state-chip">answer reveal: tắt</span></div>
@@ -1030,6 +1073,16 @@
           resetSession();
           return;
         }
+        if (target.dataset.material) {
+          event.preventDefault();
+          event.stopImmediatePropagation();
+          logEvent("material_opened", { material_type: target.dataset.material, source_id: target.dataset.material === "slides" ? "D04-P07" : null });
+          if (target.dataset.material === "slides") {
+            if (app.state === "entry") showToast("Hãy thử checkpoint trước. Anchor slide sẽ mở sau lần thử đầu.");
+            else openSource("D04-P07");
+          } else showToast("Video timestamp unavailable cho PDF này. Hãy mở anchor PDF p.7-p.10 thay thế.");
+          return;
+        }
         if (target.dataset.source) {
           event.preventDefault();
           event.stopImmediatePropagation();
@@ -1058,7 +1111,7 @@
         if (action === "explain") { setState("explain"); return; }
         if (action === "back-task") { resumeFromServer("attempt"); return; }
         if (action === "save-question") { saveQuestion(); return; }
-        if (action === "next-action") { logEvent("next_action_clicked", { next_action: "open_source" }); openSource("T04-050"); return; }
+        if (action === "next-action") { logEvent("next_action_clicked", { next_action: "open_source" }); openSource("D04-P10"); return; }
         if (action === "save-history") { logEvent("next_action_clicked", { next_action: "save_learning_history" }); showToast("Đã lưu lại lỗi M1 và nguồn đã dùng trong phiên mock."); return; }
         if (action === "restart") { resetSession(); }
       }, true);
@@ -1091,7 +1144,7 @@
           const response = updateFromResponse(body);
           app.transferText = answer;
           app.transferReasoning = reasoning;
-          app.feedback = response.evaluation.status === "pass" ? "" : "Hãy quay lại [T04-049]-[T04-050] và tìm điều kiện làm cách tách thay đổi.";
+          app.feedback = response.evaluation.status === "pass" ? "" : "Hãy quay lại PDF p.7-p.10 và tìm điều kiện khiến một prompt ngắn, rõ hơn phù hợp.";
           if (response.next.state === "completed") {
             logEvent("mastery_result_shown", { mastery_status: "demonstrated_in_session", next_action: "open_source" });
             setState("result");

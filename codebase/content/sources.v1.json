@@ -1,26 +1,54 @@
 [
   {
-    "sourceId": "T04-049",
-    "document": "transcript-04-clean.md",
-    "locator": "Transcript-04, đoạn 49",
-    "excerpt": "Token là một đơn vị tính, không phải từ hay chữ cái. Cách chia token có thể thay đổi theo ngôn ngữ.",
-    "conceptIds": ["token_is_not_word_or_letter", "tokenizer_can_split_differently"],
-    "approvedBy": "content-review-v1"
+    "sourceId": "D04-P07",
+    "document": "Prompt Engineering & Tool Calling.pdf",
+    "locator": "Provided Day 04 slide deck, PDF page 7",
+    "excerpt": "Nguyên tắc vàng: Specificity beats cleverness. Prompt ngắn nhưng rõ nghĩa thường tốt hơn prompt dài mà lan man. Prompt tốt cần rõ task, context, constraint, format.",
+    "conceptIds": ["specificity_beats_cleverness", "task_and_format_first"],
+    "approvedBy": "captain-material-review-v1",
+    "approvedLocations": [
+      {"kind": "slide", "label": "Provided Day 04 slide deck · PDF p.7"},
+      {"kind": "transcript", "label": "Transcript segment unavailable for provided PDF"},
+      {"kind": "video", "label": "Video timestamp unavailable · use PDF p.7 anchor"}
+    ]
   },
   {
-    "sourceId": "T04-050",
-    "document": "transcript-04-clean.md",
-    "locator": "Transcript-04, đoạn 50",
-    "excerpt": "Có thể dùng công thức quy đổi nhanh để ước tính, nhưng muốn biết chính xác số token thì cần dùng tool. Cách chia token có thể khác giữa các phiên bản model.",
-    "conceptIds": ["tokenizer_can_split_differently", "exact_count_needs_tool"],
-    "approvedBy": "content-review-v1"
+    "sourceId": "D04-P08",
+    "document": "Prompt Engineering & Tool Calling.pdf",
+    "locator": "Provided Day 04 slide deck, PDF page 8",
+    "excerpt": "Bắt đầu với Task + Format. Chỉ thêm Role hoặc Context khi chúng thực sự cải thiện chất lượng hoặc tính nhất quán.",
+    "conceptIds": ["task_and_format_first", "role_context_are_conditional"],
+    "approvedBy": "captain-material-review-v1",
+    "approvedLocations": [
+      {"kind": "slide", "label": "Provided Day 04 slide deck · PDF p.8"},
+      {"kind": "transcript", "label": "Transcript segment unavailable for provided PDF"},
+      {"kind": "video", "label": "Video timestamp unavailable · use PDF p.8 anchor"}
+    ]
   },
   {
-    "sourceId": "T04-051",
-    "document": "transcript-04-clean.md",
-    "locator": "Transcript-04, đoạn 51",
-    "excerpt": "Context là toàn bộ thông tin model có thể tiêu thụ trong một lần. Context window là giới hạn của nội dung token mà model có thể nhận.",
-    "conceptIds": ["context_is_not_tokenization"],
-    "approvedBy": "content-review-v1"
+    "sourceId": "D04-P10",
+    "document": "Prompt Engineering & Tool Calling.pdf",
+    "locator": "Provided Day 04 slide deck, PDF page 10",
+    "excerpt": "Prompt dài hơn không đồng nghĩa prompt tốt hơn. Mỗi token thừa làm tăng chi phí, latency, và đôi khi cả nhiễu. Hãy ưu tiên instruction rõ và output contract rõ.",
+    "conceptIds": ["specificity_beats_cleverness", "extra_prompt_can_add_cost_or_noise"],
+    "approvedBy": "captain-material-review-v1",
+    "approvedLocations": [
+      {"kind": "slide", "label": "Provided Day 04 slide deck · PDF p.10"},
+      {"kind": "transcript", "label": "Transcript segment unavailable for provided PDF"},
+      {"kind": "video", "label": "Video timestamp unavailable · use PDF p.10 anchor"}
+    ]
+  },
+  {
+    "sourceId": "D04-P20",
+    "document": "Prompt Engineering & Tool Calling.pdf",
+    "locator": "Provided Day 04 slide deck, PDF page 20",
+    "excerpt": "Điều quan trọng không phải nhét bao nhiêu context, mà là chọn đúng context cần thiết.",
+    "conceptIds": ["role_context_are_conditional", "context_should_be_selected"],
+    "approvedBy": "captain-material-review-v1",
+    "approvedLocations": [
+      {"kind": "slide", "label": "Provided Day 04 slide deck · PDF p.20"},
+      {"kind": "transcript", "label": "Transcript segment unavailable for provided PDF"},
+      {"kind": "video", "label": "Video timestamp unavailable · use PDF p.20 anchor"}
+    ]
   }
 ]
