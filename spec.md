@@ -1,53 +1,107 @@
-# AI SPEC - VError · Nhóm chưa đặt tên · Phòng E403
+# AI SPEC - VError · Nhóm VError · Phòng E403
 
 Hướng: [ ] A - VLearn  [ ] B - Trợ lý Học viên  [ ] C - Lesson Studio  [x] D - Học tập thích ứng & tương tác  [ ] E - Làn mở
 Loại: [ ] Tối ưu tính năng có sẵn  [x] Tính năng mới
 Đề: D2 - Học từ lỗi trước
 
-> Các mục chưa có bằng chứng hoặc chưa được nhóm chốt được đánh dấu là cần hoàn thiện.
-
 ## Canvas CP1 - 4 ô
 
-### 01. Người dùng & nỗi đau
+### 01. Người dùng và nỗi đau
 
-- Hướng đã chọn: Track D, đề D2 - Học từ lỗi trước.
-- Người dùng cụ thể: Cần chốt từ evidence.
-- Job và quy trình hiện tại: Cần quan sát hoặc phỏng vấn trước khi chốt.
-- Nỗi đau cụ thể: Cần xác nhận bằng mining hoặc khảo sát.
+**Người dùng cụ thể:** Học viên đang tự học một bài VLearn có khái niệm kỹ thuật mới và cần tự kiểm tra cách hiểu trước khi xem lý thuyết.
+
+**Job và workflow hiện tại:** Người học thường lướt nhanh slide để xem ý chính hoặc đọc slide từ đầu.
+16/22 phản hồi khảo sát thuộc hai cách này, trong khi chỉ 1/22 bắt đầu bằng câu hỏi hoặc bài tập.
+
+**Nỗi đau:** Sau khi học theo workflow đọc trước, 18/22 người tự đánh giá chỉ hiểu tối đa 60% nội dung.
+16/22 chỉ tập trung được ở mức một phần hoặc ít khi, và 19/22 chỉ nhớ ở mức chủ đề chung hoặc một số ý chính trở xuống.
+
+**Giả thuyết cần kiểm chứng:** Khi người học tự trả lời trước và biết chính xác giả định nào sai, họ sẽ dễ quay lại đúng nguồn, tự làm lại, và giải thích lại hơn so với chỉ đọc hoặc nhận đáp án.
 
 ### 02. Bằng chứng ban đầu
 
-- Nguồn dự kiến: `data/vlearn-pack/` và/hoặc khảo sát học viên ngoài nhóm.
-- Chuẩn B cần có số đếm, phương pháp đếm kiểm lại được, và ít nhất 5 ví dụ nguyên văn.
-- Chuẩn A cần có ít nhất 20 người ngoài nhóm, trên 50% xác nhận, cùng nhật ký câu hỏi và câu trả lời.
-- Chưa có evidence để nộp. Không thay các mục này bằng số liệu giả định.
+**Survey evidence, n=22:**
 
-### 03. Lát cắt & automation
+- 16/22 đồng ý ở mức 4-5 rằng biết chính xác vì sao sai giúp hiểu và nhớ tốt hơn.
+- 12/22 trả lời `Có lẽ muốn` hoặc `Chắc chắn muốn` dùng 3-5 câu hỏi không tính điểm, nhưng chỉ 5/22 `Chắc chắn muốn`.
+- Captain xác nhận cả 22 người trả lời đều ngoài nhóm, nên khảo sát đáp ứng quy mô tối thiểu của chuẩn A.
+- Survey vẫn là self-report và câu hỏi về pre-test là một tình huống giả định.
 
-- Hướng D2: học viên làm bài trước khi học lý thuyết; khi làm sai, sản phẩm hỗ trợ chẩn đoán lỗi và dẫn học viên quay lại nguồn học liệu.
-- Lát cắt một câu: Cần chốt sau evidence.
-- Automation: Cần chốt theo cost-of-error sau khi xác định lát cắt.
+**Mining evidence, mẫu số tách biệt:**
 
-### 04. Người thử & phân công
+- Trong K4 có 3.097 lượt của 448 học viên.
+- Trong 2.555 lượt tự gõ, có 819 lượt (32,1%) mang marker cần làm rõ khái niệm.
+- Có 304 lượt tutor reply (11,9% trên 2.555 lượt tự gõ) mang marker sửa trực tiếp.
+- K4 có 2.767 lượt `review_concept`, 11 lượt `validate_understanding`, và 6 lượt `ask_probing_question`.
+- Các số mining là lượt hoặc lexical proxy, không phải số người bị pain hay số lỗi độc lập.
 
-- Thành viên: Lê Nguyễn Quốc Bảo, Hoàng Anh Tài, Nguyễn Anh Dũng, Trần Nguyễn Tiến Đức.
-- Vai trò và phần việc: Chưa chốt.
-- Willing users ngoài nhóm: Chưa xác nhận.
+**Ví dụ ngắn đã ẩn danh từ mining:**
+
+| Mã lượt | Trích ngắn | Tín hiệu |
+|---|---|---|
+| `T10320` | “Bốn làn sóng là gì” | Cần giải thích khái niệm |
+| `T10350` | “mask và polygon là gì” | Cần phân biệt khái niệm |
+| `T10417` | “LLM có phải là một dạng của Machine Learning không?” | Đưa nhận định để kiểm tra |
+| `T11382` | “vậy IoU đó có phải threshold không?” | Đưa nhận định để kiểm tra |
+| `T10765` | “deep learning đưa dữ liệu để ai tự suy luận” | Tutor cần điều chỉnh cách hiểu |
+
+**Giới hạn:** Hai nguồn có mẫu số riêng và không được cộng thành một tỷ lệ.
+Chưa có quan sát workflow sau lỗi, retry, explain-back, thời gian bị kẹt, hay kết quả học.
+
+### 03. Lát cắt và automation
+
+**Lát cắt một câu:** Một học viên làm một bài tokenization ngắn trước khi xem lý thuyết; nếu sai, VError chỉ ra một giả định sai, đưa một gợi ý có trích nguồn, yêu cầu làm lại và giải thích ngắn; nếu đúng, VError hỏi ngược một câu để kiểm tra hiểu thay vì chỉ chúc mừng.
+
+**Nguồn nội dung:** Transcript-04, các đoạn `[T04-049]`, `[T04-050]`, và `[T04-051]`.
+
+**Automation:** Conditional augment.
+AI chỉ chẩn đoán khi có misconception và nguồn học liệu đã duyệt.
+Khi không đủ căn cứ, AI phải nêu rõ không chắc và dẫn người học về nguồn thay vì kết luận.
+
+**Cost-of-error:** Chẩn đoán sai một misconception có thể dạy người học sai lần thứ hai.
+Answer key và citation phải được kiểm soát trước.
+
+**Non-goals:**
+
+- Không cá nhân hóa toàn bộ khóa học.
+- Không mở rộng sang mọi chủ đề.
+- Không đưa đáp án ngay làm đường mặc định.
+- Không tuyên bố người học đã hiểu chỉ vì trả lời đúng một lần.
+
+### 04. Người thử và cách xác nhận
+
+**Willing users đã xác nhận:**
+
+- Trần Hữu Đức - 2A202602459 - học viên ngoài nhóm.
+- Bùi Gia Chính - 2A202602693 - học viên ngoài nhóm.
+
+Cột liên hệ tự nguyện trong survey không được dùng thay cho sự đồng ý cụ thể này.
+
+**Validation Track D:** Nhóm sẽ thử ít nhất 5 người ngoài nhóm.
+Mỗi người làm cùng một fixture tokenization với `attempt_1`, chẩn đoán, hint, `attempt_2`, và explain-back.
+
+**Log bắt buộc:** Task, lỗi quan sát được, chẩn đoán, citation, hint, số lần retry, kết quả `attempt_2`, explain-back, quote ngắn tại lúc bị kẹt, và thay đổi thiết kế.
+
+**Chỉ số cần đo:** Tỷ lệ chẩn đoán đúng, citation hỗ trợ đúng chẩn đoán, làm đúng sau hint, explain-back đúng, số hint trước khi tự sửa, thời gian đến lần làm đúng, và abstain đúng khi không đủ căn cứ.
 
 ## §1. User & Job
 
-- Job executor + workflow: Cần chốt sau khi nhóm xác định một khái niệm bài học và quan sát workflow hiện tại.
-- Core JTBD: Cần chốt từ evidence, không chứa tên sản phẩm hoặc AI.
-- Problem statement: Cần chốt từ evidence, không chứa tên sản phẩm hoặc AI.
-- Evidence: Đang thu thập theo chuẩn A và/hoặc B.
-  - Số liệu mining / kết quả khảo sát: Chưa có.
-  - ≥5 quote/ví dụ nguyên văn + nguồn: Chưa có.
+- Job executor + workflow: Học viên tự học khái niệm kỹ thuật mới trên VLearn và tự kiểm tra cách hiểu trước lý thuyết.
+- Core JTBD: Khi chưa chắc mình hiểu một khái niệm mới, tôi muốn thử trả lời trước, biết chính xác giả định nào sai, rồi tự làm lại với nguồn học liệu, để có thể giải thích lại.
+- Problem statement: Học viên thường đọc hoặc lướt học liệu trước, nhưng tự báo hiểu và nhớ chưa đầy đủ; workflow hiện tại chưa cho thấy một vòng sửa và làm lại có cấu trúc.
+- Evidence: Xem Canvas CP1 ô 02.
 
-## §2. Impact & quyết định chọn
+## §2. Impact và quyết định chọn
 
-- Bảng impact ≥3 ứng viên: Chưa thực hiện.
-- Ứng viên đã loại + vì sao: Chưa thực hiện.
-- Ứng viên chọn + vì sao bằng số: Đã chọn Track D, đề D2, nhưng chưa có evidence định lượng để chốt lát cắt.
+| Candidate D2 | Survey evidence | Mining evidence | Quyết định |
+|---|---|---|---|
+| Giải thích khái niệm theo mức kẹt | 18/22 tự báo hiểu không quá 60%; 19/22 tự báo nhớ và giải thích lại ở mức 1-3 | 819/2.555 lượt tự gõ có marker cần làm rõ khái niệm | Giữ làm fallback vì quá rộng |
+| Kiểm tra nhận định hoặc chuỗi suy luận | 16/22 đồng ý với giá trị của việc biết vì sao sai | 39/2.555 lượt tự gõ có marker kiểm tra nhận định | Dùng làm hard test bổ trợ |
+| Sửa một giả định rồi làm lại và explain-back | 12/22 có ý định dùng pre-test, nhưng chỉ 5/22 chắc chắn muốn | 304/2.555 reply có marker tutor sửa | Chọn vì sát D2 nhất |
+
+Không cộng số survey với số mining.
+Tokenization được chọn làm fixture hẹp vì K4 có 54 lượt tự gõ chứa chữ `token`, trong đó 21 lượt khớp marker khái niệm.
+Con số này chỉ hỗ trợ chọn fixture, không chứng minh 31 người mắc cùng một misconception.
 
 ## §3. Giải pháp tương tự đã nghiên cứu
 
@@ -55,38 +109,36 @@ Loại: [ ] Tối ưu tính năng có sẵn  [x] Tính năng mới
 
 ## §4. Thiết kế
 
-- Lát cắt MỘT CÂU: Cần chốt sau khi có evidence.
-- Non-goals: Chưa chốt.
-- Mức prototype nhắm tới: [ ] Sketch [ ] Mock [ ] Working.
-- Automation: [ ] augment [ ] conditional [ ] automate.
-- Lý do theo cost-of-error: Chưa chốt.
-- §4b. Nguyên tắc đã áp dụng:
+- Lát cắt, non-goals, automation và cost-of-error: Xem Canvas CP1 ô 03.
+- Mức prototype nhắm tới: [x] Mock.
+- AI thật ở bước chẩn đoán, gợi ý và phản hồi làm lại.
+- Data bài tập và misconception là fixture nhỏ do nhóm duyệt.
 
 | Nguyên tắc | Áp cụ thể vào đâu trong prototype |
 |---|---|
-| Chưa chọn | Chưa xác định |
+| G1 - Làm rõ hệ thống làm được gì | Màn hình nêu rõ VError chỉ hỗ trợ một bài tokenization và không thay thế việc học bài. |
+| G2 - Làm rõ hệ thống làm tốt đến đâu | Mỗi gợi ý hiển thị citation transcript và giới hạn của chẩn đoán. |
+| G10 - Thu hẹp phạm vi khi nghi ngờ | Input mơ hồ hoặc không khớp misconception sẽ dẫn đến câu hỏi làm rõ, không kết luận lỗi. |
+| G9 - Sửa dễ dàng | Học viên có ô trả lời lại và explain-back ngay sau gợi ý. |
 
-## §5. Kiểu lỗi - 4 lớp chỗ khó + kịch bản
+## §5. Kiểu lỗi - 4 lớp chỗ khó và kịch bản
 
-- Chưa thực hiện.
+- Chưa hoàn thiện.
 
 ## §6. Bốn đường đi của trải nghiệm
 
-- Happy path: Chưa xác định.
-- Low-confidence: Chưa xác định.
-- Failure/không căn cứ: Chưa xác định.
-- Correction: Chưa xác định.
-- Khi bị đòi ngoài phạm vi: Chưa xác định.
-- Case đặc thù domain: Chưa xác định.
+- Happy path: Chưa hoàn thiện.
+- Low-confidence: Chưa hoàn thiện.
+- Failure/không căn cứ: Chưa hoàn thiện.
+- Correction: Chưa hoàn thiện.
 
 ## §7. Kiểm thử
 
-- Chiều chất lượng + định nghĩa kiểm chứng được: Chưa xác định.
-- Golden set: Chưa xây dựng.
+- Golden set: Sẽ xây từ 3-5 misconception tokenization, case đúng, case không đủ căn cứ, và case ngoài phạm vi.
 - Quality bar: Chưa chốt.
-- Kết quả các lượt chạy: Chưa có.
+- Quality bar phải được chốt trước CP4, trước khi xem kết quả tối ưu.
 
-## §8. Phân công & kế hoạch
+## §8. Phân công và kế hoạch
 
 | Thành viên | Mã học viên | Vai trò | Phần việc |
 |---|---|---|---|
@@ -95,12 +147,12 @@ Loại: [ ] Tối ưu tính năng có sẵn  [x] Tính năng mới
 | Nguyễn Anh Dũng | 2A202602554 | Chưa phân công | Chưa phân công |
 | Trần Nguyễn Tiến Đức | 2A202602871 | Chưa phân công | Chưa phân công |
 
-- Willing users: Chưa xác nhận.
-- Kế hoạch validation: Track D yêu cầu ít nhất 5 bạn cùng lớp học thử một đoạn bằng prototype và có log hành vi hoặc kết quả học.
-- Multi-prototype: Chưa chốt.
+- Willing users: Trần Hữu Đức - 2A202602459; Bùi Gia Chính - 2A202602693.
+- Kế hoạch validation: Xem Canvas CP1 ô 04.
 
 ## §9. Changelog
 
 | Thời điểm | Đổi gì | Vì sao |
 |---|---|---|
 | 16/09/2026 | Tạo khung spec cho VError theo Track D2 | Nhóm đã chọn Track D và đề D2. |
+| 16/09/2026 | Bổ sung evidence survey và mining, chọn lát cắt tokenization theo vòng làm thử - chẩn đoán - hint có nguồn - retry - explain-back | Evidence cho thấy pain là hypothesis có tín hiệu, cần validation để đo learning outcome. |
