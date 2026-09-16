@@ -1,0 +1,6 @@
+{
+  "M_TOKEN_WORD_EQ": ["T04-049"],
+  "M_FIXED_COUNT": ["T04-049", "T04-050"],
+  "M_ENGLISH_ONLY": ["T04-049", "T04-050"],
+  "M_CONTEXT_AS_MEANING": ["T04-051"]
+}

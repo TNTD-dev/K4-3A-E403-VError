@@ -1,0 +1,26 @@
+[
+  {
+    "sourceId": "T04-049",
+    "document": "transcript-04-clean.md",
+    "locator": "Transcript-04, đoạn 49",
+    "excerpt": "Token là một đơn vị tính, không phải từ hay chữ cái. Cách chia token có thể thay đổi theo ngôn ngữ.",
+    "conceptIds": ["token_is_not_word_or_letter", "tokenizer_can_split_differently"],
+    "approvedBy": "content-review-v1"
+  },
+  {
+    "sourceId": "T04-050",
+    "document": "transcript-04-clean.md",
+    "locator": "Transcript-04, đoạn 50",
+    "excerpt": "Có thể dùng công thức quy đổi nhanh để ước tính, nhưng muốn biết chính xác số token thì cần dùng tool. Cách chia token có thể khác giữa các phiên bản model.",
+    "conceptIds": ["tokenizer_can_split_differently", "exact_count_needs_tool"],
+    "approvedBy": "content-review-v1"
+  },
+  {
+    "sourceId": "T04-051",
+    "document": "transcript-04-clean.md",
+    "locator": "Transcript-04, đoạn 51",
+    "excerpt": "Context là toàn bộ thông tin model có thể tiêu thụ trong một lần. Context window là giới hạn của nội dung token mà model có thể nhận.",
+    "conceptIds": ["context_is_not_tokenization"],
+    "approvedBy": "content-review-v1"
+  }
+]
