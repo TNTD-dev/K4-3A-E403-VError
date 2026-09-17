@@ -1,3 +1,5 @@
+import json
+
 from fastapi.testclient import TestClient
 from app.main import app
 from app.db import Store
@@ -147,3 +149,38 @@ def test_tool_loop_section_diagnoses_model_runs_tools_myth():
     ).json()
     assert result["evaluation"]["errorCode"] == "M_MODEL_RUNS_TOOLS"
     assert any(page == 22 for page in result["coach"]["highlight"]["pages"])
+
+
+def test_first_attempt_submit_requires_json_content_type_and_succeeds_with_both_headers():
+    """Regression: Idempotency-Key alone without Content-Type yields 422; both headers yield diagnosis."""
+    c = client()
+    session = c.post("/api/v1/sessions", json={"sectionId": "prompt-fundamentals"}).json()
+    sid = session["sessionId"]
+    payload = {
+        "stateVersion": 1,
+        "kind": "attempt_1",
+        "answer": {
+            "text": "Tôi đồng ý",
+            "explanation": "Tôi nghĩ prompt càng dài thì càng chi tiết",
+        },
+        "confidence": "Khá chắc",
+        "basis": "Suy luận",
+    }
+    missing_ct = c.post(
+        f"/api/v1/sessions/{sid}/attempts",
+        headers={
+            "Idempotency-Key": "attempt-no-ct",
+            "Content-Type": "text/plain",
+        },
+        content=json.dumps(payload),
+    )
+    assert missing_ct.status_code == 422
+    assert missing_ct.json().get("detail")
+
+    ok = c.post(
+        f"/api/v1/sessions/{sid}/attempts",
+        headers={"Idempotency-Key": "attempt-with-ct"},
+        json=payload,
+    )
+    assert ok.status_code == 200
+    assert ok.json()["next"]["state"] == "diagnosis"
