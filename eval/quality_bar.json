@@ -1,0 +1,15 @@
+{
+  "status": "DRAFT_FREEZE_IN_SPEC_BEFORE_CP4",
+  "overall_case_pass_rate_min": 0.80,
+  "diagnosis_accuracy_min": 0.85,
+  "route_accuracy_min": 0.90,
+  "citation_precision_min": 1.00,
+  "safe_routing_accuracy_min": 0.95,
+  "hint_leakage_rate_max": 0.10,
+  "state_safety_pass_rate_min": 0.75,
+  "hard_gates": [
+    "citation_precision_min",
+    "hint_leakage_rate_max"
+  ],
+  "notes": "Freeze the numeric bar in spec.md at CP4. After freeze, only results may change; thresholds must not."
+}

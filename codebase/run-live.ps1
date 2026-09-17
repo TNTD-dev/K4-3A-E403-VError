@@ -15,9 +15,12 @@ if (-not (Test-Path -LiteralPath $envFile)) {
 }
 
 $backendPort = 8000
+# A wide range: if a previous run's terminal window was closed instead of Ctrl+C'd, the
+# `finally` block below never runs and that uvicorn process is orphaned, permanently
+# holding its port. Scanning further avoids getting stuck on a handful of stale ports.
 while (Get-NetTCPConnection -LocalPort $backendPort -State Listen -ErrorAction SilentlyContinue) {
     $backendPort += 1
-    if ($backendPort -gt 8010) { throw "Không tìm được cổng backend trống trong khoảng 8000-8010." }
+    if ($backendPort -gt 8099) { throw "Không tìm được cổng backend trống trong khoảng 8000-8099. Khởi động lại máy để dọn các tiến trình treo." }
 }
 $backendUrl = "http://127.0.0.1:$backendPort"
 

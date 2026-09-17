@@ -1,0 +1,1 @@
+case_id,bucket,hard_class,provenance,expected_route,actual_route,expected_misconception,actual_misconception,actual_citations,route_correct,diagnosis_correct,grounding_correct,pedagogical_safe,next_action_correct,state_safety,case_pass,latency_ms,error

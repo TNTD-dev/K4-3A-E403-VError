@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "VError Golden Set",
+  "type": "object",
+  "required": ["version", "cases"],
+  "properties": {
+    "version": {"type": "string"},
+    "cases": {
+      "type": "array",
+      "minItems": 20,
+      "items": {
+        "type": "object",
+        "required": ["id", "bucket", "hard_class", "input", "expected", "provenance"],
+        "properties": {
+          "id": {"type": "string"},
+          "bucket": {"enum": ["normal", "hard", "rare", "integration"]},
+          "hard_class": {"enum": ["none", "source_truth", "ambiguous", "out_of_scope", "domain_specific"]},
+          "input": {"type": "object"},
+          "expected": {"type": "object"},
+          "provenance": {"type": "object"}
+        }
+      }
+    }
+  }
+}
