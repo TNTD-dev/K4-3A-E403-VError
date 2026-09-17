@@ -1,0 +1,106 @@
+[
+  {
+    "itemId": "day04-s01-specificity",
+    "sectionId": "prompt-fundamentals",
+    "version": "2026-09-17.1",
+    "title": "Prompt dài hơn có luôn tốt hơn?",
+    "statement": "“Prompt càng dài, càng nhiều role và context thì model càng thông minh và kết quả càng tốt.”",
+    "taskText": "Bạn đồng ý hay không? Chỉ ra giả định cần sửa và viết lại hướng prompt cho một task cụ thể trong 1-2 câu.",
+    "stakes": "Nếu bạn tin prompt dài luôn thắng, slide fundamentals sẽ khóa bạn trong giả định sai trước khi mở.",
+    "transfer": {
+      "prompt": "Agent cần tóm tắt support ticket thành JSON 3 trường. Bạn chọn prompt dài nhiều persona hay prompt rõ Task + Format? Nêu điều kiện khiến lựa chọn đúng."
+    },
+    "sources": ["D04-P07", "D04-P08", "D04-P10"]
+  },
+  {
+    "itemId": "day04-s02-technique-order",
+    "sectionId": "advanced-prompting",
+    "version": "2026-09-17.1",
+    "title": "CoT có phải mặc định không?",
+    "statement": "“Muốn output tốt thì luôn bật Chain-of-Thought hoặc few-shot ngay từ đầu cho mọi task.”",
+    "taskText": "Một teammate đề xuất luôn dán 5 ví dụ + 'think step by step' cho cả classify spam lẫn extract email. Bạn đồng ý? Viết thứ tự thử thực dụng bạn sẽ dùng.",
+    "stakes": "Kỹ thuật nâng cao dùng sai chỗ tốn token và che mất lỗi format đơn giản.",
+    "transfer": {
+      "prompt": "Task mới: chuẩn hóa số điện thoại Việt Nam về E.164. Bạn bắt đầu zero-shot, few-shot hay CoT? Vì sao?"
+    },
+    "sources": ["D04-P11", "D04-P14"]
+  },
+  {
+    "itemId": "day04-s03-system-policy",
+    "sectionId": "system-prompts",
+    "version": "2026-09-17.1",
+    "title": "System prompt dài có kiểm soát agent không?",
+    "statement": "“System prompt càng dài, nhồi đủ persona và lời khuyên 'hãy thông minh', agent production sẽ ổn định.”",
+    "taskText": "Bạn review một system prompt 2000 token vừa bảo ngắn gọn vừa bắt giải thích chi tiết. Chỉ ra giả định sai và nêu 2 thành phần policy bắt buộc phải rõ.",
+    "stakes": "Policy mơ hồ hoặc mâu thuẫn làm agent khó predict trước khi vào tool loop.",
+    "transfer": {
+      "prompt": "Viết skeleton system prompt cho support triage: 1 rule, 1 constraint, 1 output contract. Không cần dài."
+    },
+    "sources": ["D04-P15", "D04-P17"]
+  },
+  {
+    "itemId": "day04-s04-context-select",
+    "sectionId": "context-engineering",
+    "version": "2026-09-17.1",
+    "title": "Nhét hết history có an toàn không?",
+    "statement": "“Cứ dump toàn bộ chat history và docs vào context window thì model sẽ không bỏ sót gì.”",
+    "taskText": "Support agent có 80 lượt chat cũ. Bạn dump hết hay chọn lọc? Nêu nguyên tắc chọn context và rủi ro nếu history ăn hết output buffer.",
+    "stakes": "Context thừa tạo nhiễu và lost-in-the-middle trước khi model trả lời.",
+    "transfer": {
+      "prompt": "Coding assistant chỉ cần 3 file liên quan nhưng repo có 40 file. Bạn đưa gì vào context và dùng summarize/drop/archive thế nào?"
+    },
+    "sources": ["D04-P18", "D04-P19", "D04-P20"]
+  },
+  {
+    "itemId": "day04-s05-tool-loop",
+    "sectionId": "tool-calling",
+    "version": "2026-09-17.1",
+    "title": "Model có tự gọi API không?",
+    "statement": "“Khi model quyết định tool_call, nó tự chạy API/weather service rồi trả lời user luôn.”",
+    "taskText": "Bạn debug agent weather: model emit tool_call JSON nhưng app không làm gì thêm. Kết quả sẽ ra sao? Viết lại đúng vòng lặp tool calling.",
+    "stakes": "Nhầm model tự chạy tool khiến bạn sửa sai chỗ: prompt thay vì app loop.",
+    "transfer": {
+      "prompt": "User hỏi thời tiết Hà Nội. Liệt kê 4 bước: model → app → tool → model final, mỗi bước một dòng."
+    },
+    "sources": ["D04-P22", "D04-P23"]
+  },
+  {
+    "itemId": "day04-s06-tool-granularity",
+    "sectionId": "tool-design",
+    "version": "2026-09-17.1",
+    "title": "Một super-tool có tốt hơn không?",
+    "statement": "“Tiện nhất là một tool handle_all_customer_operations ôm mọi việc customer support.”",
+    "taskText": "Teammate muốn gộp lookup order, refund, email draft vào một tool. Bạn đồng ý? Nêu 1 nguyên tắc thiết kế và 1 hậu quả nếu granularity sai.",
+    "stakes": "Boundary mơ hồ làm model chọn tool tệ và khó test độc lập.",
+    "transfer": {
+      "prompt": "Đặt tên 2 tool cho e-commerce agent thay vì một super-tool. Mỗi tên phải là một hành động nghiệp vụ rõ."
+    },
+    "sources": ["D04-P27", "D04-P28"]
+  },
+  {
+    "itemId": "day04-s07-parallel-deps",
+    "sectionId": "parallel-patterns",
+    "version": "2026-09-17.1",
+    "title": "Parallel luôn nhanh và đúng?",
+    "statement": "“Cứ gọi mọi tool song song là agent nhanh hơn và luôn đúng.”",
+    "taskText": "Flow: tìm order ID rồi mới tra shipping status. Có nên parallel hai tool này không? Viết điều kiện được parallel và pattern thay thế khi có phụ thuộc.",
+    "stakes": "Parallel mù quáng phá control flow và merge logic.",
+    "transfer": {
+      "prompt": "Cần weather + tỷ giá + lịch họp độc lập. Chọn sequential, parallel, hay chaining? Nêu bước merge/verify cuối."
+    },
+    "sources": ["D04-P32", "D04-P33"]
+  },
+  {
+    "itemId": "day04-s08-lab-evidence",
+    "sectionId": "lab-deliverable",
+    "version": "2026-09-17.1",
+    "title": "Chạy được agent là đủ deliverable?",
+    "statement": "“Lab xong khi agent script chạy được một lần; test questions và note lỗi là phụ.”",
+    "taskText": "Bạn nộp lab chỉ với script chạy demo. Thiếu gì theo deliverable Day 04? Liệt kê bundle bắt buộc và vì sao 5 test questions quan trọng.",
+    "stakes": "Không có test và phân loại lỗi thì bạn không chứng minh agent biết khi nào gọi tool.",
+    "transfer": {
+      "prompt": "Viết 2 test questions: 1 câu agent phải trả lời trực tiếp, 1 câu phải gọi tool. Mỗi câu một dòng."
+    },
+    "sources": ["D04-P36", "D04-P38"]
+  }
+]

@@ -2,12 +2,12 @@
   {
     "sourceId": "D04-P07",
     "document": "Prompt Engineering & Tool Calling.pdf",
-    "locator": "Provided Day 04 slide deck, PDF page 7",
+    "locator": "Day 04 slide deck, PDF page 7",
     "excerpt": "Nguyên tắc vàng: Specificity beats cleverness. Prompt ngắn nhưng rõ nghĩa thường tốt hơn prompt dài mà lan man. Prompt tốt cần rõ task, context, constraint, format.",
     "conceptIds": ["specificity_beats_cleverness", "task_and_format_first"],
     "approvedBy": "captain-material-review-v1",
     "approvedLocations": [
-      {"kind": "slide", "label": "Provided Day 04 slide deck · PDF p.7"},
+      {"kind": "slide", "label": "Day 04 slide deck · PDF p.7", "page": 7},
       {"kind": "transcript", "label": "Transcript segment unavailable for provided PDF"},
       {"kind": "video", "label": "Video timestamp unavailable · use PDF p.7 anchor"}
     ]
@@ -15,12 +15,12 @@
   {
     "sourceId": "D04-P08",
     "document": "Prompt Engineering & Tool Calling.pdf",
-    "locator": "Provided Day 04 slide deck, PDF page 8",
+    "locator": "Day 04 slide deck, PDF page 8",
     "excerpt": "Bắt đầu với Task + Format. Chỉ thêm Role hoặc Context khi chúng thực sự cải thiện chất lượng hoặc tính nhất quán.",
     "conceptIds": ["task_and_format_first", "role_context_are_conditional"],
     "approvedBy": "captain-material-review-v1",
     "approvedLocations": [
-      {"kind": "slide", "label": "Provided Day 04 slide deck · PDF p.8"},
+      {"kind": "slide", "label": "Day 04 slide deck · PDF p.8", "page": 8},
       {"kind": "transcript", "label": "Transcript segment unavailable for provided PDF"},
       {"kind": "video", "label": "Video timestamp unavailable · use PDF p.8 anchor"}
     ]
@@ -28,27 +28,209 @@
   {
     "sourceId": "D04-P10",
     "document": "Prompt Engineering & Tool Calling.pdf",
-    "locator": "Provided Day 04 slide deck, PDF page 10",
-    "excerpt": "Prompt dài hơn không đồng nghĩa prompt tốt hơn. Mỗi token thừa làm tăng chi phí, latency, và đôi khi cả nhiễu. Hãy ưu tiên instruction rõ và output contract rõ.",
+    "locator": "Day 04 slide deck, PDF page 10",
+    "excerpt": "Prompt dài hơn không đồng nghĩa prompt tốt hơn. Mỗi token thừa làm tăng chi phí, latency, và đôi khi cả nhiễu. Nếu prompt dài thêm nhưng không đổi hành vi mong muốn, hãy cắt bớt.",
     "conceptIds": ["specificity_beats_cleverness", "extra_prompt_can_add_cost_or_noise"],
     "approvedBy": "captain-material-review-v1",
     "approvedLocations": [
-      {"kind": "slide", "label": "Provided Day 04 slide deck · PDF p.10"},
+      {"kind": "slide", "label": "Day 04 slide deck · PDF p.10", "page": 10},
       {"kind": "transcript", "label": "Transcript segment unavailable for provided PDF"},
       {"kind": "video", "label": "Video timestamp unavailable · use PDF p.10 anchor"}
     ]
   },
   {
-    "sourceId": "D04-P20",
+    "sourceId": "D04-P11",
     "document": "Prompt Engineering & Tool Calling.pdf",
-    "locator": "Provided Day 04 slide deck, PDF page 20",
-    "excerpt": "Điều quan trọng không phải nhét bao nhiêu context, mà là chọn đúng context cần thiết.",
-    "conceptIds": ["role_context_are_conditional", "context_should_be_selected"],
+    "locator": "Day 04 slide deck, PDF page 11",
+    "excerpt": "Thứ tự thử thực dụng: zero-shot -> few-shot -> decomposition / CoT. Đừng nhảy vào prompt phức tạp ngay từ đầu.",
+    "conceptIds": ["try_simple_first", "advanced_is_conditional"],
     "approvedBy": "captain-material-review-v1",
     "approvedLocations": [
-      {"kind": "slide", "label": "Provided Day 04 slide deck · PDF p.20"},
+      {"kind": "slide", "label": "Day 04 slide deck · PDF p.11", "page": 11},
+      {"kind": "transcript", "label": "Transcript segment unavailable for provided PDF"},
+      {"kind": "video", "label": "Video timestamp unavailable · use PDF p.11 anchor"}
+    ]
+  },
+  {
+    "sourceId": "D04-P14",
+    "document": "Prompt Engineering & Tool Calling.pdf",
+    "locator": "Day 04 slide deck, PDF page 14",
+    "excerpt": "CoT là công cụ cải thiện reasoning, không phải phép màu. Nếu task chỉ là formatting hoặc extraction đơn giản, CoT thường là overkill.",
+    "conceptIds": ["cot_not_magic", "advanced_is_conditional"],
+    "approvedBy": "captain-material-review-v1",
+    "approvedLocations": [
+      {"kind": "slide", "label": "Day 04 slide deck · PDF p.14", "page": 14},
+      {"kind": "transcript", "label": "Transcript segment unavailable for provided PDF"},
+      {"kind": "video", "label": "Video timestamp unavailable · use PDF p.14 anchor"}
+    ]
+  },
+  {
+    "sourceId": "D04-P15",
+    "document": "Prompt Engineering & Tool Calling.pdf",
+    "locator": "Day 04 slide deck, PDF page 15",
+    "excerpt": "System prompt production-grade gồm Persona, Rules, Capabilities, Constraints và Output format. Đây là policy layer cho agent.",
+    "conceptIds": ["system_is_policy", "clear_boundaries"],
+    "approvedBy": "captain-material-review-v1",
+    "approvedLocations": [
+      {"kind": "slide", "label": "Day 04 slide deck · PDF p.15", "page": 15},
+      {"kind": "transcript", "label": "Transcript segment unavailable for provided PDF"},
+      {"kind": "video", "label": "Video timestamp unavailable · use PDF p.15 anchor"}
+    ]
+  },
+  {
+    "sourceId": "D04-P17",
+    "document": "Prompt Engineering & Tool Calling.pdf",
+    "locator": "Day 04 slide deck, PDF page 17",
+    "excerpt": "Anti-pattern: quá dài, mâu thuẫn, mơ hồ, không test edge cases. Nguyên tắc: system prompt là policy layer. Càng rõ boundary, càng dễ predict hành vi.",
+    "conceptIds": ["system_is_policy", "clear_boundaries", "avoid_vague_system"],
+    "approvedBy": "captain-material-review-v1",
+    "approvedLocations": [
+      {"kind": "slide", "label": "Day 04 slide deck · PDF p.17", "page": 17},
+      {"kind": "transcript", "label": "Transcript segment unavailable for provided PDF"},
+      {"kind": "video", "label": "Video timestamp unavailable · use PDF p.17 anchor"}
+    ]
+  },
+  {
+    "sourceId": "D04-P18",
+    "document": "Prompt Engineering & Tool Calling.pdf",
+    "locator": "Day 04 slide deck, PDF page 18",
+    "excerpt": "Điều quan trọng không phải nhét bao nhiêu context, mà là chọn đúng context cần thiết.",
+    "conceptIds": ["context_should_be_selected"],
+    "approvedBy": "captain-material-review-v1",
+    "approvedLocations": [
+      {"kind": "slide", "label": "Day 04 slide deck · PDF p.18", "page": 18},
+      {"kind": "transcript", "label": "Transcript segment unavailable for provided PDF"},
+      {"kind": "video", "label": "Video timestamp unavailable · use PDF p.18 anchor"}
+    ]
+  },
+  {
+    "sourceId": "D04-P19",
+    "document": "Prompt Engineering & Tool Calling.pdf",
+    "locator": "Day 04 slide deck, PDF page 19",
+    "excerpt": "Memory injection chỉ đưa facts thật sự cần. Compression: summarize, drop, archive. Context engineering là chọn lọc và ưu tiên.",
+    "conceptIds": ["context_should_be_selected", "compress_or_drop"],
+    "approvedBy": "captain-material-review-v1",
+    "approvedLocations": [
+      {"kind": "slide", "label": "Day 04 slide deck · PDF p.19", "page": 19},
+      {"kind": "transcript", "label": "Transcript segment unavailable for provided PDF"},
+      {"kind": "video", "label": "Video timestamp unavailable · use PDF p.19 anchor"}
+    ]
+  },
+  {
+    "sourceId": "D04-P20",
+    "document": "Prompt Engineering & Tool Calling.pdf",
+    "locator": "Day 04 slide deck, PDF page 20",
+    "excerpt": "Token budget allocation cần chủ động: đừng để history, tools và examples ăn hết chỗ dành cho output.",
+    "conceptIds": ["token_budget_active", "context_should_be_selected"],
+    "approvedBy": "captain-material-review-v1",
+    "approvedLocations": [
+      {"kind": "slide", "label": "Day 04 slide deck · PDF p.20", "page": 20},
       {"kind": "transcript", "label": "Transcript segment unavailable for provided PDF"},
       {"kind": "video", "label": "Video timestamp unavailable · use PDF p.20 anchor"}
+    ]
+  },
+  {
+    "sourceId": "D04-P22",
+    "document": "Prompt Engineering & Tool Calling.pdf",
+    "locator": "Day 04 slide deck, PDF page 22",
+    "excerpt": "Tool calling flow: LLM decides tool_call JSON → App executes tool → tool result → LLM final response. Model không tự chạy code hay tự gọi API ngoài.",
+    "conceptIds": ["app_executes_tool", "tool_loop"],
+    "approvedBy": "captain-material-review-v1",
+    "approvedLocations": [
+      {"kind": "slide", "label": "Day 04 slide deck · PDF p.22", "page": 22},
+      {"kind": "transcript", "label": "Transcript segment unavailable for provided PDF"},
+      {"kind": "video", "label": "Video timestamp unavailable · use PDF p.22 anchor"}
+    ]
+  },
+  {
+    "sourceId": "D04-P23",
+    "document": "Prompt Engineering & Tool Calling.pdf",
+    "locator": "Day 04 slide deck, PDF page 23",
+    "excerpt": "LLM đọc description như tài liệu hướng dẫn. Nếu description mơ hồ, model sẽ chọn sai tool hoặc truyền sai arguments.",
+    "conceptIds": ["schema_guides_choice", "tool_loop"],
+    "approvedBy": "captain-material-review-v1",
+    "approvedLocations": [
+      {"kind": "slide", "label": "Day 04 slide deck · PDF p.23", "page": 23},
+      {"kind": "transcript", "label": "Transcript segment unavailable for provided PDF"},
+      {"kind": "video", "label": "Video timestamp unavailable · use PDF p.23 anchor"}
+    ]
+  },
+  {
+    "sourceId": "D04-P27",
+    "document": "Prompt Engineering & Tool Calling.pdf",
+    "locator": "Day 04 slide deck, PDF page 27",
+    "excerpt": "Bốn nguyên tắc: Single Responsibility, Idempotency, Granularity hợp lý, Test độc lập. Tool tốt là software interface tốt.",
+    "conceptIds": ["single_responsibility", "sensible_granularity"],
+    "approvedBy": "captain-material-review-v1",
+    "approvedLocations": [
+      {"kind": "slide", "label": "Day 04 slide deck · PDF p.27", "page": 27},
+      {"kind": "transcript", "label": "Transcript segment unavailable for provided PDF"},
+      {"kind": "video", "label": "Video timestamp unavailable · use PDF p.27 anchor"}
+    ]
+  },
+  {
+    "sourceId": "D04-P28",
+    "document": "Prompt Engineering & Tool Calling.pdf",
+    "locator": "Day 04 slide deck, PDF page 28",
+    "excerpt": "Tool quá nhỏ tạo quá nhiều calls; tool quá to làm model không hiểu boundary. Thiết kế quanh một hành động nghiệp vụ rõ ràng.",
+    "conceptIds": ["sensible_granularity", "single_responsibility"],
+    "approvedBy": "captain-material-review-v1",
+    "approvedLocations": [
+      {"kind": "slide", "label": "Day 04 slide deck · PDF p.28", "page": 28},
+      {"kind": "transcript", "label": "Transcript segment unavailable for provided PDF"},
+      {"kind": "video", "label": "Video timestamp unavailable · use PDF p.28 anchor"}
+    ]
+  },
+  {
+    "sourceId": "D04-P32",
+    "document": "Prompt Engineering & Tool Calling.pdf",
+    "locator": "Day 04 slide deck, PDF page 32",
+    "excerpt": "Chỉ song song hóa khi không có phụ thuộc dữ liệu. Nếu Tool B cần output của Tool A, giữ sequential. Vẫn cần bước merge/verify rõ ràng ở cuối.",
+    "conceptIds": ["parallel_needs_independence", "control_flow_first"],
+    "approvedBy": "captain-material-review-v1",
+    "approvedLocations": [
+      {"kind": "slide", "label": "Day 04 slide deck · PDF p.32", "page": 32},
+      {"kind": "transcript", "label": "Transcript segment unavailable for provided PDF"},
+      {"kind": "video", "label": "Video timestamp unavailable · use PDF p.32 anchor"}
+    ]
+  },
+  {
+    "sourceId": "D04-P33",
+    "document": "Prompt Engineering & Tool Calling.pdf",
+    "locator": "Day 04 slide deck, PDF page 33",
+    "excerpt": "Tool calling là bài toán control flow: khi nào gọi, gọi cái gì, gọi theo thứ tự nào, và làm gì khi tool fail. Patterns: conditional, chaining, parallel fetch + merge.",
+    "conceptIds": ["control_flow_first", "parallel_needs_independence"],
+    "approvedBy": "captain-material-review-v1",
+    "approvedLocations": [
+      {"kind": "slide", "label": "Day 04 slide deck · PDF p.33", "page": 33},
+      {"kind": "transcript", "label": "Transcript segment unavailable for provided PDF"},
+      {"kind": "video", "label": "Video timestamp unavailable · use PDF p.33 anchor"}
+    ]
+  },
+  {
+    "sourceId": "D04-P36",
+    "document": "Prompt Engineering & Tool Calling.pdf",
+    "locator": "Day 04 slide deck, PDF page 36",
+    "excerpt": "Lab 4: viết system prompt, tạo 2 custom tools, nối agent loop, chạy 5 câu test, ghi lại lỗi thuộc loại prompt, tool schema hay control flow.",
+    "conceptIds": ["lab_needs_tests", "classify_failure_type"],
+    "approvedBy": "captain-material-review-v1",
+    "approvedLocations": [
+      {"kind": "slide", "label": "Day 04 slide deck · PDF p.36", "page": 36},
+      {"kind": "transcript", "label": "Transcript segment unavailable for provided PDF"},
+      {"kind": "video", "label": "Video timestamp unavailable · use PDF p.36 anchor"}
+    ]
+  },
+  {
+    "sourceId": "D04-P38",
+    "document": "Prompt Engineering & Tool Calling.pdf",
+    "locator": "Day 04 slide deck, PDF page 38",
+    "excerpt": "Deliverable: agent script chạy được + system prompt + 2 tool schemas + 5 test outputs + note lỗi prompt/tool/control flow.",
+    "conceptIds": ["lab_needs_tests", "deliverable_bundle"],
+    "approvedBy": "captain-material-review-v1",
+    "approvedLocations": [
+      {"kind": "slide", "label": "Day 04 slide deck · PDF p.38", "page": 38},
+      {"kind": "transcript", "label": "Transcript segment unavailable for provided PDF"},
+      {"kind": "video", "label": "Video timestamp unavailable · use PDF p.38 anchor"}
     ]
   }
 ]
