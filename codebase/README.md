@@ -1,32 +1,105 @@
-# VError D2
+# VError D2 · React + FastAPI
 
-VError is a local TypeScript monolith for the Track D2 Prompt Engineering learning slice on an existing VLearn Day 04.
+VError is a local monolith for the Track D2 Prompt Engineering learning slice inside a VLearn Day player.
+The browser client is React.
+The runtime API is Python FastAPI + Pydantic.
+SQLite stores sessions, attempts, coach outputs, day progress, and hashed events.
+OpenAI is used only for bounded coach wording, with `MODEL_MODE=offline` template fallback.
 
-The browser flow is served from `public/index.html` and calls the Fastify API.
-The learning orchestrator, answer key, evaluator, retry policy, citation verifier and event writer run on the server.
-`GET /api/v1/items/prompt-clarity-01` exposes the public Day card and bounded source catalog, while `GET /api/v1/sources/:sourceId` supports source navigation.
-The entry point frames VError as an active-learning layer before the existing Day 04 slides and lecture video, not as a replacement lesson.
+## Product shape
 
-## Run
+Demo day: **Bài 4 · DAY04 Prompt Engineering & Tool Calling**.
+
+The React shell mirrors the VLearn Day player:
+
+- header with day label, progress, **Đặt câu hỏi với AI**, **Gửi yêu cầu**
+- left nav: **Slides / Video / KC & Luyện tập**
+- eight TOC sections from the course deck
+- PDF slide viewer for the reviewed 43-page deck
+
+Before each knowledge section the learner gets one easy VError attempt.
+That section's slides stay locked until the first attempt is in.
+After the attempt, VError unlocks the matching PDF pages, highlights the wrong assumption against a reviewed page, and keeps retry / explain-back / transfer until understanding is evidenced.
+Completing an attempt also unlocks the next section's attempt slot.
+
+The question set is first-class: eight items, one core claim per TOC section, each exposing a likely wrong assumption grounded in reviewed PDF pages.
+
+D2 mechanics stay in force:
+
+- public item without the answer key
+- evaluation in code
+- one bounded D2 Coach
+- citation verification in code
+- event log
+
+No TypeScript Fastify runtime, no three independent agents, no RAG, no teacher dashboard, no extra days, no PostgreSQL, no serverless.
+
+## Deck
+
+Copy of the captain deck:
+
+`frontend/public/prompt-engineering-tool-calling.pdf`
+
+Source used for this worktree:
+
+`/home/duckk/firstmate/data/verror-react-python/Prompt Engineering & Tool Calling.pdf`
+
+## Run locally
+
+Requirements: Python 3.11-3.13 and Node.js 20-24.
+
+### Backend
 
 ```bash
+cd backend
+python -m venv .venv
+. .venv/bin/activate # Windows: .venv\Scripts\activate
+python -m pip install --upgrade pip
+pip install -e '.[test]'
+MODEL_MODE=offline uvicorn app.main:app --reload --port 8000
+```
+
+### Frontend
+
+In another terminal:
+
+```bash
+cd frontend
 npm install
 npm run dev
 ```
 
-Open `http://localhost:3000`.
+Open http://127.0.0.1:5173.
+Vite proxies `/api`, health checks, and the PDF path to FastAPI when needed.
+The deck also ships from `frontend/public` for the Vite dev server.
 
-The default is `MODEL_MODE=offline`, so the complete flow works without a network or API key.
-Set `MODEL_MODE=live`, `OPENAI_API_KEY` and `OPENAI_MODEL` only on the server to enable the bounded D2 Coach wording call.
-The live provider is optional and always falls back to the reviewed offline templates.
+For one-process local serving, run `npm run build`; FastAPI serves `frontend/dist` and the PDF when present.
 
-## Test
+### Modes
+
+- Default `MODEL_MODE=offline` is deterministic and needs no network or API key.
+- Set `MODEL_MODE=live`, `OPENAI_API_KEY`, and optionally `OPENAI_MODEL` only for bounded coach wording.
+- Every live draft is schema- and citation-verified, with reviewed offline fallback on provider errors or unsafe output.
+
+## Tests
 
 ```bash
-npm test
-npm run check
+cd backend
+. .venv/bin/activate
+pytest
 ```
 
-The answer key is server-only and is never included in the session response.
-The repository contains only short, reviewed excerpts from the captain-provided `Prompt Engineering & Tool Calling.pdf`, not the course data pack.
-The demo uses PDF pages 7, 8, 10 and 20 for the prompt-length misconception and records that no transcript segment or video timestamp was available for this PDF.
+Coverage:
+
+- deterministic evaluator for all eight section items
+- API contract and private answer key
+- section attempt/slide lock progression
+- offline coach fallback and citation verification
+
+## Content layout
+
+- `content/items.v1.json` - eight public items
+- `content/answer-keys.v1.json` - server-only keys
+- `content/sources.v1.json` - reviewed PDF anchors
+- `content/citation-support.v1.json` - diagnosis → allowed citations
+- `backend/app/sections.py` - TOC + page ranges
