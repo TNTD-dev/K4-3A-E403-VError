@@ -598,7 +598,7 @@ function Diagnosis({ coach, openSource, hint, busy }) {
     <div>
       <div className="diagnosis">
         <b>CHỖ SAI CẦN KIỂM TRA</b>
-        <h2>{coach?.diagnosisCode || "Giả định lệch"}</h2>
+        <h2>Giả định lệch</h2>
         <p>{coach?.message}</p>
         {coach?.highlight?.excerpts?.[0] && <blockquote>{coach.highlight.excerpts[0]}</blockquote>}
       </div>

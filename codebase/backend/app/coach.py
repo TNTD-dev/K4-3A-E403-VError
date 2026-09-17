@@ -19,8 +19,8 @@ class Coach:
                 "hintLevel": None,
                 "citationIds": allowed.get(diagnosis, CITATION_SUPPORT.get(diagnosis, []))[:1],
                 "learnerMessage": (
-                    "Mình thấy bài làm đang dựa trên một giả định cần kiểm tra "
-                    f"({diagnosis}). Hãy đối chiếu đúng trang PDF được gắn trước khi sửa."
+                    "Mình thấy bài làm đang dựa trên một giả định cần kiểm tra. "
+                    "Hãy đối chiếu đúng trang PDF được gắn trước khi sửa."
                 ),
             }
         else:

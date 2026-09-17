@@ -1,5 +1,6 @@
 from __future__ import annotations
 import os
+from datetime import datetime, timezone
 from pathlib import Path
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -92,11 +93,16 @@ def submit_attempt(session_id: str, body: AttemptBody, request: Request):
     if not key or len(key) < 8 or len(key) > 120:
         raise HTTPException(400, "IDEMPOTENCY_KEY_REQUIRED")
     cache_key = f"{session_id}:{key}"
-    cached = getattr(app.state, "idempotency", {}).get(cache_key)
+    cached = app.state.idempotency.get(cache_key)
     if cached:
         return cached
     result = api.submit_attempt(session_id, body)
-    app.state.idempotency[cache_key] = result
+    cache = app.state.idempotency
+    now = datetime.now(timezone.utc)
+    cache[cache_key] = (now, result)
+    if len(cache) > 5000:
+        cutoff = datetime.fromtimestamp(now.timestamp() - 1800, tz=timezone.utc)
+        cache |= {k: v for k, v in cache.items() if v[0] > cutoff}
     return result
 
 

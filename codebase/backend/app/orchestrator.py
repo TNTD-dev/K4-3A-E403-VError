@@ -59,7 +59,11 @@ def citations(ids: list[str]) -> list[dict[str, Any]]:
 
 
 def public_session(row: Any, attempts: list[Any], progress: dict[str, Any] | None = None) -> dict[str, Any]:
-    item = item_by_id(row["item_id"]) or item_for_section(row["section_id"])
+    item = item_by_id(row["item_id"])
+    if not item:
+        item = item_for_section(row["section_id"])
+        if not item:
+            raise DomainError("ITEM_NOT_FOUND", 500, "Session references an item that no longer exists in the content catalog")
     payload = {
         "sessionId": row["id"],
         "sectionId": row["section_id"],
@@ -183,7 +187,7 @@ class Orchestrator:
             else None,
             "citations": cited,
             "highlight": {
-                "assumption": draft["diagnosisCode"],
+                "assumption": None,
                 "pages": [c["page"] for c in cited if c.get("page")],
                 "excerpts": [c["excerpt"] for c in cited],
             },
