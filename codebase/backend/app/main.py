@@ -95,7 +95,7 @@ def submit_attempt(session_id: str, body: AttemptBody, request: Request):
     cache_key = f"{session_id}:{key}"
     cached = app.state.idempotency.get(cache_key)
     if cached:
-        return cached
+        return cached[1]
     result = api.submit_attempt(session_id, body)
     cache = app.state.idempotency
     now = datetime.now(timezone.utc)
