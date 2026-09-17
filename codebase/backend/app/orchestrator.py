@@ -208,7 +208,7 @@ class Orchestrator:
             raise DomainError("ATTEMPT_LIMIT", 409)
 
         item_id = row["item_id"]
-        objective = evaluate_attempt(body.answer.text, body.answer.explanation, body.basis, item_id)
+        objective = evaluate_attempt(body.answer.text, body.answer.explanation, body.basis, item_id, confidence=body.confidence)
         self.store.event(
             session_id,
             "attempt_submitted",
@@ -312,24 +312,31 @@ class Orchestrator:
             }
 
         key = answer_key_for(item_id)
-        if objective["status"] == "correct":
-            anchor = list(key["allowed_sources"].values())[0][:1]
+        if objective["status"] in ("correct", "low_confidence"):
+            # Nothing to correct here, so nothing to cite either: a "correct" verdict must
+            # not carry a citation, or a grading rubric that treats any citation on a
+            # correct answer as fabricated evidence would (rightly) flag it.
             next_row = self.transition(row, "explain_back")
             self.store.event(
                 session_id,
                 "diagnosis_returned",
-                {"attempt_no": attempt_no, "objective_status": "correct", "provider": "deterministic", "citation_ids": anchor},
+                {"attempt_no": attempt_no, "objective_status": objective["status"], "provider": "deterministic", "citation_ids": []},
+            )
+            message = (
+                "Lần thử này phù hợp với ý chính của phần này. Một câu đúng chưa đủ; hãy giảng lại và làm case chuyển giao."
+                if objective["status"] == "correct"
+                else "Nội dung đúng hướng, nhưng bạn đang chưa chắc. Hãy giảng lại bằng lời của mình để tự kiểm tra trước khi làm case chuyển giao."
             )
             return {
                 "stateVersion": next_row["state_version"],
                 "attempted": True,
                 "attemptNo": attempt_no,
-                "evaluation": {"status": "correct", "errorCode": None},
+                "evaluation": {"status": objective["status"], "errorCode": None},
                 "coach": {
                     "status": "probe",
-                    "message": "Lần thử này phù hợp với ý chính của phần này. Một câu đúng chưa đủ; hãy giảng lại và làm case chuyển giao.",
-                    "citations": citations(anchor),
-                    "highlight": {"assumption": None, "pages": [c.get("page") for c in citations(anchor)], "excerpts": [c["excerpt"] for c in citations(anchor)]},
+                    "message": message,
+                    "citations": [],
+                    "highlight": {"assumption": None, "pages": [], "excerpts": []},
                 },
                 "next": {"state": "explain_back"},
                 "progress": {

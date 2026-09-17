@@ -73,6 +73,14 @@ Open http://127.0.0.1:5173.
 Vite proxies `/api`, health checks, and the PDF path to FastAPI when needed.
 The deck also ships from `frontend/public` for the Vite dev server.
 
+### Chạy nhanh trên Windows
+
+1. Mở `backend/.env`, dán `OPENAI_API_KEY` để bật Question Agent và D2 Coach thật.
+2. Từ thư mục `codebase`, chạy `powershell -ExecutionPolicy Bypass -File .\run-live.ps1`.
+3. Mở `http://127.0.0.1:5173`.
+
+`run-live.ps1` khởi động backend ẩn và frontend ở terminal hiện tại; dừng frontend bằng Ctrl+C sẽ dừng luôn backend. Nếu không có key hoặc provider lỗi, giao diện ghi rõ đang dùng câu hỏi đã duyệt thay vì giả vờ là AI thật.
+
 For one-process local serving, run `npm run build`; FastAPI serves `frontend/dist` and the PDF when present.
 
 ### Modes

@@ -2,6 +2,7 @@ from __future__ import annotations
 import os
 from datetime import datetime, timezone
 from pathlib import Path
+from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
@@ -10,13 +11,23 @@ from .coach import Coach
 from .content import DEFAULT_LEARNER, item_by_id, item_for_section, source, source_catalog, source_version_info
 from .db import Store
 from .orchestrator import DomainError, Orchestrator
-from .schemas import AttemptBody, CreateSessionBody, ExplainBody, HintBody, StateVersionBody, TransferBody
+from .schemas import AttemptBody, CreateSessionBody, ExplainBody, HintBody, KeyInsightBody, StateVersionBody, TransferBody
 from .sections import SECTIONS, section
+from .question_generator import QuestionGenerator
+from .slide_agent import SlideAgent
 
 ROOT = Path(__file__).resolve().parents[2]
+load_dotenv(ROOT / "backend" / ".env")
 mode = os.getenv("MODEL_MODE", "offline")
 store = Store(os.getenv("SQLITE_PATH", str(ROOT / "verror.sqlite")))
 api = Orchestrator(store, Coach(mode), mode, DEFAULT_LEARNER)
+question_generator = QuestionGenerator(mode)
+pdf_candidates = [
+    ROOT / "frontend" / "public" / "prompt-engineering-tool-calling.pdf",
+    ROOT / "content" / "prompt-engineering-tool-calling.pdf",
+]
+PDF_PATH = next((path for path in pdf_candidates if path.exists()), None)
+slide_agent = SlideAgent(PDF_PATH, mode)
 app = FastAPI(title="VError D2 API", version="1.1.0")
 app.add_middleware(
     CORSMiddleware,
@@ -72,6 +83,62 @@ def get_section_item(section_id: str):
     if not item:
         raise HTTPException(404, "ITEM_NOT_FOUND")
     return {"item": item, "sourceVersion": source_version_info(item["itemId"])["sourceVersion"], "sources": source_catalog(item["itemId"])}
+
+
+@app.post("/api/v1/sections/{section_id}/item/generate")
+def generate_section_item(section_id: str):
+    if not section(section_id):
+        raise HTTPException(404, "SECTION_NOT_FOUND")
+    item = item_for_section(section_id)
+    if not item:
+        raise HTTPException(404, "ITEM_NOT_FOUND")
+    sources = source_catalog(item["itemId"])
+    result = question_generator.generate(item, sources)
+    return {
+        "item": result["item"],
+        "sources": sources,
+        "sourceVersion": source_version_info(item["itemId"])["sourceVersion"],
+        "generation": {
+            "provider": result["provider"],
+            "model": result["model"],
+            "generated": result["generated"],
+            "fallbackReason": result["fallbackReason"],
+        },
+    }
+
+
+@app.get("/api/v1/deck/outline")
+def deck_outline(refresh: bool = False):
+    try:
+        return slide_agent.outline(refresh=refresh)
+    except FileNotFoundError:
+        raise HTTPException(404, "PDF_NOT_FOUND")
+
+
+@app.post("/api/v1/sections/{section_id}/key-insight")
+def key_insight(section_id: str, body: KeyInsightBody):
+    if not section(section_id):
+        raise HTTPException(404, "SECTION_NOT_FOUND")
+    if section_id not in store.progress(api.learner_id)["unlockedSlides"]:
+        # Productive failure: the explanation only opens after the learner has tried.
+        raise DomainError("SLIDES_LOCKED", 403, "Hãy làm pre-quiz của phần này trước khi xem kiến thức trọng tâm.")
+    attempt = None
+    if body.sessionId:
+        row = api.require(body.sessionId)
+        if row["section_id"] != section_id:
+            raise DomainError("SESSION_SECTION_MISMATCH", 409)
+        attempts = store.attempts(body.sessionId)
+        attempt = dict(attempts[-1]) if attempts else None
+    try:
+        return {"sectionId": section_id, **slide_agent.key_insight(section_id, attempt)}
+    except FileNotFoundError:
+        raise HTTPException(404, "PDF_NOT_FOUND")
+
+
+@app.post("/api/v1/progress/reset")
+def reset_progress():
+    store.reset_progress(api.learner_id)
+    return api.sections()
 
 
 @app.get("/api/v1/sources/{source_id}")
@@ -132,12 +199,6 @@ def resume(session_id: str, body: StateVersionBody):
 
 
 app.state.idempotency = {}
-
-pdf_candidates = [
-    ROOT / "frontend" / "public" / "prompt-engineering-tool-calling.pdf",
-    ROOT / "content" / "prompt-engineering-tool-calling.pdf",
-]
-PDF_PATH = next((path for path in pdf_candidates if path.exists()), None)
 
 
 @app.get("/prompt-engineering-tool-calling.pdf")

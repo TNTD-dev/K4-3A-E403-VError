@@ -93,6 +93,17 @@ def sources_for_item(item_id: str) -> list[dict[str, Any]]:
     return [dict(source) for source in APPROVED_SOURCES if source["sourceId"] in wanted]
 
 
+def approved_pages(item_id: str) -> set[int]:
+    """PDF pages an item's approved sources actually point to, for verifying a learner's
+    claimed page citation before treating it as grounded evidence."""
+    return {
+        location["page"]
+        for source in sources_for_item(item_id)
+        for location in source.get("approvedLocations", [])
+        if location.get("kind") == "slide" and location.get("page")
+    }
+
+
 def source_catalog(item_id: str | None = None) -> list[dict[str, Any]]:
     if item_id:
         return sources_for_item(item_id)

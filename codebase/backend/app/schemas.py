@@ -69,6 +69,10 @@ class TransferBody(StrictModel):
     reasoning: str = Field(max_length=500)
 
 
+class KeyInsightBody(StrictModel):
+    sessionId: str | None = Field(default=None, max_length=80)
+
+
 class StateVersionBody(StrictModel):
     stateVersion: int = Field(gt=0)
 

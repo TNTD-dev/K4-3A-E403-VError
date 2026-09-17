@@ -1,11 +1,68 @@
 from __future__ import annotations
 import re
 from typing import Any
-from .content import ANSWER_KEYS, CITATION_SUPPORT, source
+from .content import ANSWER_KEYS, CITATION_SUPPORT, approved_pages, source
 from .schemas import CoachDraft
 
 LOW_SIGNAL = re.compile(r"asdf|abc|test|\?+|không biết gì", re.I)
-OUT_OF_SCOPE = re.compile(r"giá api|price of|attention matrix|tokenization detail|viết chương trình c\+\+|mã nguồn kernel", re.I)
+
+# Fixed off-topic phrases we already knew about, plus concept-only markers
+# (a specific provider name, an unrelated framework/domain) that generalize better than
+# one exact sentence each. A pricing question only counts as out-of-scope when it names an
+# actual provider/model — "chi phí" in the abstract can still be legitimate Day 04 content
+# (token budget, latency) so it is deliberately not treated as a price marker on its own.
+OUT_OF_SCOPE_PHRASES = re.compile(
+    r"giá api|price of|attention matrix|tokenization detail|viết chương trình c\+\+|mã nguồn kernel|"
+    r"langchain|computer vision|polygon|object detection",
+    re.I,
+)
+PRICE_MARKERS = re.compile(r"giá|price", re.I)
+PROVIDER_MARKERS = re.compile(r"gemini|gpt|claude|openai|anthropic", re.I)
+
+# A learner citing a specific page ("trang 99 nói...") reads as grounded, but the claim is
+# only as good as the page actually existing among this item's approved sources — see
+# `_cites_unapproved_page`.
+PAGE_MENTION = re.compile(r"trang\s+(\d+)", re.I)
+
+# The learner's own words say the input is contradictory or that they genuinely don't know
+# the criterion — ask, don't guess a diagnosis either way.
+CONTRADICTION_MARKERS = re.compile(
+    r"lỡ (bấm|chọn|click|nhấn)|bấm nhầm|chọn nhầm|nhấn nhầm|"
+    r"chưa biết (tiêu chí|criterion)|có khi.*có khi (không|chưa)|"
+    r"tùy (trường hợp|lúc|tình huống)|không chắc (tiêu chí|khi nào|lúc nào)",
+    re.I,
+)
+
+# A conditional/qualifying clause turns an absolute-sounding claim ("dài hơn thì tốt hơn")
+# into a defensible, correct one ("dài hơn có thể tốt hơn NẾU ... thực sự cần thiết"). Only
+# used for item day04-s01-specificity, where the misconceptions are specifically about
+# treating length/context/role as unconditionally better.
+HEDGE_MARKERS = re.compile(
+    r"nếu|chỉ khi|miễn là|với điều kiện|"
+    r"không phải|không nhất thiết|không đồng nghĩa|không cần|không quan trọng|"
+    r"không tự động|không coi|không tối đa",
+    re.I,
+)
+# A misconception phrase quoted only to say "I used to believe that, not anymore" must not
+# re-trigger the same diagnosis on the corrected retry.
+RETRACTION_MARKERS = re.compile(
+    r"trước đây|lần trước|hồi trước|từng nghĩ|đã từng (nghĩ|tin)|"
+    r"giờ (mình )?(đã )?bỏ|không còn (nghĩ|tin)|đổi ý|thay đổi (suy nghĩ|giả định)|bỏ giả định (đó|này)",
+    re.I,
+)
+
+# Generalized length/context/role check for day04-s01-specificity: a concept term plus an
+# unconditional-superiority claim, used only when the exact SECTION_PATTERNS phrase list
+# below doesn't already match a paraphrase (e.g. "viết dài thêm thì vẫn luôn tốt hơn").
+_AXIS_TERMS = {
+    "M_PROMPT_LONGER_BETTER": r"(dài|nhiều token|nhiều.{0,8}chữ|viết dài|thêm.*dài)",
+    "M_MORE_CONTEXT_ALWAYS_BETTER": r"(context|bối cảnh)",
+    "M_CLEVER_ROLE_ALWAYS_BETTER": r"(role|persona|vai trò)",
+}
+_UNCONDITIONAL_SUPERIORITY = re.compile(
+    r"luôn|chắc chắn|càng.*càng tốt|tốt hơn|giúp (model|kết quả)|thông minh hơn|an toàn hơn",
+    re.I,
+)
 
 
 def _text(answer: str, explanation: str) -> str:
@@ -21,6 +78,29 @@ def _find_code(patterns: list[tuple[str, str]], text: str) -> str | None:
         if re.search(pattern, text, re.I):
             return code
     return None
+
+
+def _axis_violation(item_id: str, text: str) -> str | None:
+    if item_id != "day04-s01-specificity" or not _UNCONDITIONAL_SUPERIORITY.search(text):
+        return None
+    for code, term_pattern in _AXIS_TERMS.items():
+        if re.search(term_pattern, text, re.I):
+            return code
+    return None
+
+
+def _looks_out_of_scope(text: str) -> bool:
+    if OUT_OF_SCOPE_PHRASES.search(text):
+        return True
+    return bool(PRICE_MARKERS.search(text) and PROVIDER_MARKERS.search(text))
+
+
+def _cites_unapproved_page(text: str, item_id: str) -> bool:
+    mentioned = {int(page) for page in PAGE_MENTION.findall(text)}
+    if not mentioned:
+        return False
+    allowed = approved_pages(item_id)
+    return not allowed or not mentioned.issubset(allowed)
 
 
 SECTION_PATTERNS: dict[str, list[tuple[str, str]]] = {
@@ -60,7 +140,10 @@ SECTION_PATTERNS: dict[str, list[tuple[str, str]]] = {
 }
 
 CORRECT_PATTERNS: dict[str, list[str]] = {
-    "day04-s01-specificity": [r"không nhất thiết|không đồng nghĩa|task\s*\+\s*format|specificity|rõ.*hơn.*dài|không phải cứ dài"],
+    "day04-s01-specificity": [
+        r"không nhất thiết|không đồng nghĩa|task\s*\+\s*format|specificity|rõ.*hơn.*dài|không phải cứ dài|"
+        r"task.{0,15}format|format.{0,15}task"
+    ],
     "day04-s02-technique-order": [r"zero-?shot.*trước|thử zero-?shot|không phải mặc định|cot.*overkill|thứ tự.*zero"],
     "day04-s03-system-policy": [r"policy|boundary|constraint|output (format|contract)|không mâu thuẫn|rules"],
     "day04-s04-context-select": [r"chọn.*context|không nhét hết|summarize|drop|archive|token budget|cần thiết"],
@@ -214,28 +297,52 @@ OFFLINE_HINTS: dict[str, dict[int, tuple[str, list[str]]]] = {
 
 
 def find_misconception(item_id: str, text: str) -> str | None:
-    return _find_code(SECTION_PATTERNS.get(item_id, []), text)
+    code = _find_code(SECTION_PATTERNS.get(item_id, []), text)
+    return code or _axis_violation(item_id, text)
 
 
-def evaluate_attempt(answer: str, explanation: str, basis: str | None = None, item_id: str = "day04-s01-specificity") -> dict[str, Any]:
+def evaluate_attempt(
+    answer: str,
+    explanation: str,
+    basis: str | None = None,
+    item_id: str = "day04-s01-specificity",
+    *,
+    confidence: str | None = None,
+) -> dict[str, Any]:
     text = _text(answer, explanation)
     if not answer.strip() or basis == "Chưa có căn cứ" or LOW_SIGNAL.fullmatch(answer.strip() or ""):
         return {"status": "unknown", "errorCode": None, "reason": "no_basis"}
-    if OUT_OF_SCOPE.search(text):
+    # A claim anchored to a specific page is only as good as that page actually existing
+    # among this item's approved sources — a fabricated citation should read as unverifiable,
+    # not as evidence of a real misconception.
+    if _cites_unapproved_page(text, item_id):
+        return {"status": "unknown", "errorCode": None, "reason": "unverifiable_source_page"}
+    if _looks_out_of_scope(text):
         return {"status": "out_of_scope", "errorCode": None, "reason": "outside_day04_fixture"}
     if not explanation.strip():
         return {"status": "clarify", "errorCode": None, "reason": "reasoning_missing"}
+    if CONTRADICTION_MARKERS.search(text):
+        return {"status": "clarify", "errorCode": None, "reason": "contradictory_or_ambiguous_signal"}
 
-    correct_hit = any(re.search(pattern, answer, re.I) for pattern in CORRECT_PATTERNS.get(item_id, []))
-    endorses_wrong = bool(re.search(r"đồng ý|đúng vậy|luôn luôn|chắc chắn tốt|càng .* càng tốt", answer, re.I)) and not _has_negation(answer)
-    if correct_hit and _has_negation(answer) and not endorses_wrong:
-        return {"status": "correct", "errorCode": None, "reason": "matches_expected_concept"}
-    if correct_hit and not endorses_wrong:
-        return {"status": "correct", "errorCode": None, "reason": "matches_expected_concept"}
-
+    # Misconception check runs over the FULL text (answer + reasoning) and before the
+    # "matches expected concept" check: a correct-sounding answer must not mask a
+    # misconception stated in the reasoning, and vice versa. A hedge/conditional clause or
+    # an explicit retraction of an old belief overrides a raw phrase match.
     candidate = find_misconception(item_id, text)
+    hedged_or_retracted = item_id == "day04-s01-specificity" and bool(
+        HEDGE_MARKERS.search(text) or RETRACTION_MARKERS.search(text)
+    )
+    if candidate and hedged_or_retracted:
+        candidate = None
     if candidate:
         return {"status": "incorrect", "errorCode": candidate, "reason": "mapped_misconception"}
+
+    correct_hit = any(re.search(pattern, text, re.I) for pattern in CORRECT_PATTERNS.get(item_id, []))
+    if correct_hit or hedged_or_retracted:
+        status = "low_confidence" if confidence == "Chưa chắc" else "correct"
+        return {"status": status, "errorCode": None, "reason": "matches_expected_concept"}
+
+    endorses_wrong = bool(re.search(r"đồng ý|đúng vậy|luôn luôn|chắc chắn tốt|càng .* càng tốt", text, re.I)) and not _has_negation(text)
     if endorses_wrong:
         # Fall back to the first misconception for the item when the learner clearly agrees with the bad claim.
         codes = list(ANSWER_KEYS[item_id]["misconceptions"])

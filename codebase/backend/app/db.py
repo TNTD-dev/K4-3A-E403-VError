@@ -141,6 +141,10 @@ class Store:
             unlocked_attempts.add(following["sectionId"])
         return self.save_progress(learner_id, unlocked_attempts, unlocked_slides, completed)
 
+    def reset_progress(self, learner_id: str = DEFAULT_LEARNER) -> dict[str, Any]:
+        """Demo reset: back to only the first section attempt being open."""
+        return self.save_progress(learner_id, {first_section_id()}, set(), set())
+
     def mark_section_completed(self, section_id: str, learner_id: str = DEFAULT_LEARNER) -> dict[str, Any]:
         state = self.progress(learner_id)
         completed = set(state["completedSections"])
