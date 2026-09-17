@@ -1,0 +1,54 @@
+[
+  {
+    "sourceId": "D04-P07",
+    "document": "Prompt Engineering & Tool Calling.pdf",
+    "locator": "Provided Day 04 slide deck, PDF page 7",
+    "excerpt": "Nguyên tắc vàng: Specificity beats cleverness. Prompt ngắn nhưng rõ nghĩa thường tốt hơn prompt dài mà lan man. Prompt tốt cần rõ task, context, constraint, format.",
+    "conceptIds": ["specificity_beats_cleverness", "task_and_format_first"],
+    "approvedBy": "captain-material-review-v1",
+    "approvedLocations": [
+      {"kind": "slide", "label": "Provided Day 04 slide deck · PDF p.7"},
+      {"kind": "transcript", "label": "Transcript segment unavailable for provided PDF"},
+      {"kind": "video", "label": "Video timestamp unavailable · use PDF p.7 anchor"}
+    ]
+  },
+  {
+    "sourceId": "D04-P08",
+    "document": "Prompt Engineering & Tool Calling.pdf",
+    "locator": "Provided Day 04 slide deck, PDF page 8",
+    "excerpt": "Bắt đầu với Task + Format. Chỉ thêm Role hoặc Context khi chúng thực sự cải thiện chất lượng hoặc tính nhất quán.",
+    "conceptIds": ["task_and_format_first", "role_context_are_conditional"],
+    "approvedBy": "captain-material-review-v1",
+    "approvedLocations": [
+      {"kind": "slide", "label": "Provided Day 04 slide deck · PDF p.8"},
+      {"kind": "transcript", "label": "Transcript segment unavailable for provided PDF"},
+      {"kind": "video", "label": "Video timestamp unavailable · use PDF p.8 anchor"}
+    ]
+  },
+  {
+    "sourceId": "D04-P10",
+    "document": "Prompt Engineering & Tool Calling.pdf",
+    "locator": "Provided Day 04 slide deck, PDF page 10",
+    "excerpt": "Prompt dài hơn không đồng nghĩa prompt tốt hơn. Mỗi token thừa làm tăng chi phí, latency, và đôi khi cả nhiễu. Hãy ưu tiên instruction rõ và output contract rõ.",
+    "conceptIds": ["specificity_beats_cleverness", "extra_prompt_can_add_cost_or_noise"],
+    "approvedBy": "captain-material-review-v1",
+    "approvedLocations": [
+      {"kind": "slide", "label": "Provided Day 04 slide deck · PDF p.10"},
+      {"kind": "transcript", "label": "Transcript segment unavailable for provided PDF"},
+      {"kind": "video", "label": "Video timestamp unavailable · use PDF p.10 anchor"}
+    ]
+  },
+  {
+    "sourceId": "D04-P20",
+    "document": "Prompt Engineering & Tool Calling.pdf",
+    "locator": "Provided Day 04 slide deck, PDF page 20",
+    "excerpt": "Điều quan trọng không phải nhét bao nhiêu context, mà là chọn đúng context cần thiết.",
+    "conceptIds": ["role_context_are_conditional", "context_should_be_selected"],
+    "approvedBy": "captain-material-review-v1",
+    "approvedLocations": [
+      {"kind": "slide", "label": "Provided Day 04 slide deck · PDF p.20"},
+      {"kind": "transcript", "label": "Transcript segment unavailable for provided PDF"},
+      {"kind": "video", "label": "Video timestamp unavailable · use PDF p.20 anchor"}
+    ]
+  }
+]

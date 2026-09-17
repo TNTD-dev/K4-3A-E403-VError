@@ -1,0 +1,21 @@
+{
+  "itemId": "prompt-clarity-01",
+  "version": "2026-09-16.2",
+  "prompt": "Prompt càng dài và càng nhiều role/context thì có luôn tốt hơn không?",
+  "taskText": "Một bạn viết: “Prompt càng dài, càng nhiều role và context thì model càng thông minh và kết quả càng tốt.” Bạn đồng ý hay không? Hãy chỉ ra giả định cần sửa và viết lại prompt cho một task cụ thể trong 1-2 câu.",
+  "responseMode": "free_text_plus_reasoning",
+  "scope": "prompt_engineering",
+  "day": {
+    "dayId": "day-04",
+    "title": "Prompt Engineering & Tool Calling",
+    "materials": [
+      {"type": "slides", "label": "Slide deck", "status": "available", "locator": "PDF p.7-p.20"},
+      {"type": "lecture_video", "label": "Lecture video", "status": "available", "locatorStatus": "unavailable", "note": "Video timestamp unavailable for the provided PDF"}
+    ]
+  },
+  "sources": ["D04-P07", "D04-P08", "D04-P10", "D04-P20"],
+  "activeLayer": "Attempt trước khi xem slide hoặc video; sau diagnosis mở đúng anchor PDF đã duyệt.",
+  "transfer": {
+    "prompt": "Bạn cần agent tóm tắt support ticket thành JSON có 3 trường. Giữa một prompt dài với nhiều persona/context và một prompt rõ Task + Format, bạn chọn hướng nào? Hãy nêu điều kiện khiến lựa chọn của bạn đúng."
+  }
+}

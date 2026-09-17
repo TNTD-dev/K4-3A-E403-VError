@@ -50,13 +50,15 @@ Chưa có quan sát workflow sau lỗi, retry, explain-back, thời gian bị k�
 
 ### 03. Lát cắt và automation
 
-**Lát cắt một câu:** Một học viên làm một bài tokenization ngắn trước khi xem lý thuyết; nếu sai, VError chỉ ra một giả định sai, đưa một gợi ý có trích nguồn, yêu cầu làm lại và giải thích ngắn; nếu đúng, VError hỏi ngược một câu để kiểm tra hiểu thay vì chỉ chúc mừng.
+**Lát cắt một câu:** Một học viên làm một checkpoint Prompt Engineering ngắn trước khi xem slide hoặc video Day 04; nếu sai, VError chỉ ra giả định “prompt càng dài hoặc càng nhiều thành phần thì luôn tốt hơn”, đưa gợi ý có trích nguồn, yêu cầu làm lại và explain-back; nếu đúng, VError hỏi ngược một tình huống viết prompt cho task mới thay vì chỉ chúc mừng.
 
-**Nguồn nội dung:** Transcript-04, các đoạn `[T04-049]`, `[T04-050]`, và `[T04-051]`.
+**Nguồn nội dung:** `Prompt Engineering & Tool Calling.pdf` do captain cung cấp, giới hạn ở PDF p.7, p.8, p.10 và p.20.
+Transcript segment và video timestamp chưa có trong material được cung cấp, nên UI/API hiển thị rõ trạng thái unavailable thay vì bịa vị trí.
 
 **Automation:** Conditional augment.
 AI chỉ chẩn đoán khi có misconception và nguồn học liệu đã duyệt.
 Khi không đủ căn cứ, AI phải nêu rõ không chắc và dẫn người học về nguồn thay vì kết luận.
+VError là active-learning layer gắn vào một Day đã có slide và video, không thay thế việc học thụ động.
 
 **Cost-of-error:** Chẩn đoán sai một misconception có thể dạy người học sai lần thứ hai.
 Answer key và citation phải được kiểm soát trước.
@@ -78,7 +80,7 @@ Answer key và citation phải được kiểm soát trước.
 Cột liên hệ tự nguyện trong survey không được dùng thay cho sự đồng ý cụ thể này.
 
 **Validation Track D:** Nhóm sẽ thử ít nhất 5 người ngoài nhóm.
-Mỗi người làm cùng một fixture tokenization với `attempt_1`, chẩn đoán, hint, `attempt_2`, và explain-back.
+Mỗi người làm cùng một fixture Prompt Engineering với `attempt_1`, chẩn đoán, hint, `attempt_2`, explain-back và transfer check.
 
 **Log bắt buộc:** Task, lỗi quan sát được, chẩn đoán, citation, hint, số lần retry, kết quả `attempt_2`, explain-back, quote ngắn tại lúc bị kẹt, và thay đổi thiết kế.
 
@@ -100,8 +102,9 @@ Mỗi người làm cùng một fixture tokenization với `attempt_1`, chẩn �
 | Sửa một giả định rồi làm lại và explain-back | 12/22 có ý định dùng pre-test, nhưng chỉ 5/22 chắc chắn muốn | 304/2.555 reply có marker tutor sửa | Chọn vì sát D2 nhất |
 
 Không cộng số survey với số mining.
-Tokenization được chọn làm fixture hẹp vì K4 có 54 lượt tự gõ chứa chữ `token`, trong đó 21 lượt khớp marker khái niệm.
-Con số này chỉ hỗ trợ chọn fixture, không chứng minh 31 người mắc cùng một misconception.
+Prompt Engineering được chọn làm fixture hẹp vì material Day 04 do captain cung cấp có một claim rõ để kiểm tra và các anchor đủ gần nhau cho demo 5 phút.
+Các anchor p.7, p.8, p.10 và p.20 hỗ trợ trực tiếp concept specificity, Task + Format, chi phí hoặc nhiễu của token thừa, và context cần thiết.
+Đây là bounded content evidence cho mockup, không chứng minh người học nào đã mắc misconception này.
 
 ## §3. Giải pháp tương tự đã nghiên cứu
 
@@ -116,27 +119,40 @@ Con số này chỉ hỗ trợ chọn fixture, không chứng minh 31 người m
 
 | Nguyên tắc | Áp cụ thể vào đâu trong prototype |
 |---|---|
-| G1 - Làm rõ hệ thống làm được gì | Màn hình nêu rõ VError chỉ hỗ trợ một bài tokenization và không thay thế việc học bài. |
-| G2 - Làm rõ hệ thống làm tốt đến đâu | Mỗi gợi ý hiển thị citation transcript và giới hạn của chẩn đoán. |
+| G1 - Làm rõ hệ thống làm được gì | Màn hình nêu rõ VError chỉ hỗ trợ một checkpoint Prompt Engineering của Day 04 và không thay thế slide hoặc video. |
+| G2 - Làm rõ hệ thống làm tốt đến đâu | Mỗi gợi ý hiển thị citation PDF page và trạng thái transcript/video unavailable khi không có anchor tương ứng. |
 | G10 - Thu hẹp phạm vi khi nghi ngờ | Input mơ hồ hoặc không khớp misconception sẽ dẫn đến câu hỏi làm rõ, không kết luận lỗi. |
 | G9 - Sửa dễ dàng | Học viên có ô trả lời lại và explain-back ngay sau gợi ý. |
 
 ## §5. Kiểu lỗi - 4 lớp chỗ khó và kịch bản
 
-- Chưa hoàn thiện.
+| Mã | Giả định cần kiểm tra | Nguồn hỗ trợ | Hành vi UI/API |
+|---|---|---|---|
+| `M_PROMPT_LONGER_BETTER` | Prompt càng dài hoặc càng nhiều thành phần thì luôn tốt hơn. | D04-P07, D04-P10 | Chẩn đoán có điều kiện, hint theo 3 mức, retry không auto-fill. |
+| `M_MORE_CONTEXT_ALWAYS_BETTER` | Cứ thêm context thì output sẽ tốt hơn. | D04-P08, D04-P20 | Dẫn về Task + Format và context cần thiết, không kết luận ngoài nguồn. |
+| `M_CLEVER_ROLE_ALWAYS_BETTER` | Thêm Role hoặc persona ấn tượng luôn làm prompt tốt hơn. | D04-P07, D04-P08 | Dẫn về specificity và điều kiện để thêm Role, không chấm văn phong. |
+
+Các trạng thái an toàn là `clarify` khi thiếu reasoning, `low-confidence` khi tín hiệu không đủ, `no-basis` khi người học chọn abstain, và `out-of-scope` khi câu hỏi vượt lát cắt.
+Các trạng thái này không nhận misconception label màu đỏ và không mở answer reveal.
 
 ## §6. Bốn đường đi của trải nghiệm
 
-- Happy path: Chưa hoàn thiện.
-- Low-confidence: Chưa hoàn thiện.
-- Failure/không căn cứ: Chưa hoàn thiện.
-- Correction: Chưa hoàn thiện.
+- Happy path: Entry từ Day 04 -> pre-test gồm answer, reasoning, confidence và basis -> diagnosis có source -> hint 1/2/3 theo yêu cầu -> retry tự viết -> explain-back -> transfer case về prompt JSON -> mastery result và next action mở lại PDF p.7-p.10.
+- Low-confidence: Câu trả lời đúng nhưng người học chọn `Chưa chắc` hoặc `Đoán` -> UI nói đúng hướng nhưng chưa đủ bằng chứng -> bắt buộc explain-back và transfer -> chỉ kết luận `demonstrated_in_session` sau hai kiểm tra.
+- Failure/không căn cứ: Blank, gibberish hoặc `Chưa có căn cứ` -> `source_review` -> mở anchor PDF p.7 hoặc quay lại retry -> có thể lưu câu hỏi cho người dạy.
+- Correction: Misconception có source -> chẩn đoán giả định, không đưa đáp án -> hint tăng dần và mở citation -> người học tự viết lại -> evaluator kiểm tra attempt mới trước khi cho explain-back.
+- Clarify: Có answer nhưng thiếu reasoning -> hỏi đang dựa vào độ dài, Role, Context, Task hay Format -> quay lại draft hoặc abstain.
+- Out-of-scope: Về giá API, code hoặc kiến thức ngoài source -> nói rõ giới hạn -> quay lại task hoặc lưu câu hỏi, không suy đoán.
 
 ## §7. Kiểm thử
 
-- Golden set: Sẽ xây từ 3-5 misconception tokenization, case đúng, case không đủ căn cứ, và case ngoài phạm vi.
-- Quality bar: Chưa chốt.
-- Quality bar phải được chốt trước CP4, trước khi xem kết quả tối ưu.
+- Golden set: Có 3 misconception Prompt Engineering, case đúng, case không đủ căn cứ, case clarify và case ngoài phạm vi.
+- Quality bar: Mỗi diagnosis phải có misconception nằm trong answer key và mọi citation phải nằm trong citation-support tương ứng.
+- Hint level 1 và 2 không được chứa conclusion cuối, còn level 3 chỉ dùng reviewed explanation sau nỗ lực.
+- Public session không chứa expected concept hoặc required explain claims.
+- Luồng correction phải đi được từ attempt đến diagnosis, citation hint, retry, explain-back, transfer và completed.
+- Luồng no-basis, clarify, out-of-scope, stale state và thiếu idempotency key phải có test riêng.
+- Các số liệu learning outcome vẫn là giả thuyết cần validation với ít nhất 5 người ngoài nhóm, không phải benchmark đã có.
 
 ## §8. Phân công và kế hoạch
 
@@ -155,4 +171,5 @@ Con số này chỉ hỗ trợ chọn fixture, không chứng minh 31 người m
 | Thời điểm | Đổi gì | Vì sao |
 |---|---|---|
 | 16/09/2026 | Tạo khung spec cho VError theo Track D2 | Nhóm đã chọn Track D và đề D2. |
-| 16/09/2026 | Bổ sung evidence survey và mining, chọn lát cắt tokenization theo vòng làm thử - chẩn đoán - hint có nguồn - retry - explain-back | Evidence cho thấy pain là hypothesis có tín hiệu, cần validation để đo learning outcome. |
+| 16/09/2026 | Bổ sung evidence survey và mining, chọn lát cắt sửa misconception theo vòng làm thử - chẩn đoán - hint có nguồn - retry - explain-back | Evidence cho thấy pain là hypothesis có tín hiệu, cần validation để đo learning outcome. |
+| 16/09/2026 | Thay fixture tokenization bằng Prompt Engineering & Tool Calling Day 04 | Captain cung cấp PDF có các anchor p.7, p.8, p.10 và p.20 đủ hẹp để demo; transcript segment và video timestamp chưa có nên được ghi rõ là unavailable. |
