@@ -1,32 +1,50 @@
 # VError D2
 
-VError is a local TypeScript monolith for the Track D2 Prompt Engineering learning slice on an existing VLearn Day 04.
+VError is a local monolith for the Track D2 Prompt Engineering learning slice.
+The browser client is a React application and the runtime API is Python FastAPI.
+The learning flow remains server-owned: the public item never contains the answer key, the deterministic evaluator chooses the misconception, and the bounded D2 Coach only writes grounded wording.
 
-The browser flow is served from `public/index.html` and calls the Fastify API.
-The learning orchestrator, answer key, evaluator, retry policy, citation verifier and event writer run on the server.
-`GET /api/v1/items/prompt-clarity-01` exposes the public Day card and bounded source catalog, while `GET /api/v1/sources/:sourceId` supports source navigation.
-The entry point frames VError as an active-learning layer before the existing Day 04 slides and lecture video, not as a replacement lesson.
+## Run locally
 
-## Run
+Requirements: Python 3.11-3.13 and Node.js 20-24.
+
+### Backend
 
 ```bash
+cd backend
+python -m venv .venv
+. .venv/bin/activate # Windows: .venv\\Scripts\\activate
+python -m pip install --upgrade pip
+pip install -e '.[test]'
+MODEL_MODE=offline uvicorn app.main:app --reload --port 8000
+```
+
+### Frontend
+
+In another terminal:
+
+```bash
+cd frontend
 npm install
 npm run dev
 ```
 
-Open `http://localhost:3000`.
+Open http://127.0.0.1:5173.
+Vite proxies API requests to FastAPI.
+For one-process local serving, run `npm run build`; FastAPI serves `frontend/dist` when it exists.
 
-The default is `MODEL_MODE=offline`, so the complete flow works without a network or API key.
-Set `MODEL_MODE=live`, `OPENAI_API_KEY` and `OPENAI_MODEL` only on the server to enable the bounded D2 Coach wording call.
-The live provider is optional and always falls back to the reviewed offline templates.
+The default `MODEL_MODE=offline` is deterministic and needs no network or API key.
+Set `MODEL_MODE=live`, `OPENAI_API_KEY`, and optionally `OPENAI_MODEL` only for bounded coach wording.
+Every live draft is schema- and citation-verified, with reviewed offline fallback on provider errors or unsafe output.
 
-## Test
+## Tests
 
 ```bash
-npm test
-npm run check
+cd backend
+. .venv/bin/activate
+pytest
 ```
 
-The answer key is server-only and is never included in the session response.
-The repository contains only short, reviewed excerpts from the captain-provided `Prompt Engineering & Tool Calling.pdf`, not the course data pack.
-The demo uses PDF pages 7, 8, 10 and 20 for the prompt-length misconception and records that no transcript segment or video timestamp was available for this PDF.
+Tests cover the deterministic evaluator, API contract and offline fallback behavior.
+SQLite stores sessions, attempts, coach outputs and hashed event records.
+PostgreSQL and serverless deployment are intentionally out of scope.
