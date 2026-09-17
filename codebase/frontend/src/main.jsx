@@ -1,18 +1,16 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { createRoot } from "react-dom/client";
 import "./styles.css";
+import { buildFetchInit, formatApiError } from "./http.js";
 
 const API = import.meta.env.VITE_API_BASE || "";
 const PDF = "/prompt-engineering-tool-calling.pdf";
 const initial = { answer: "", explanation: "", confidence: "", basis: "" };
 
 async function request(path, options = {}) {
-  const response = await fetch(`${API}${path}`, {
-    headers: { "Content-Type": "application/json", ...(options.headers || {}) },
-    ...options,
-  });
+  const response = await fetch(`${API}${path}`, buildFetchInit(options));
   const data = await response.json().catch(() => ({}));
-  if (!response.ok) throw new Error(data.message || data.error || "Có lỗi xảy ra");
+  if (!response.ok) throw new Error(formatApiError(data));
   return data;
 }
 
