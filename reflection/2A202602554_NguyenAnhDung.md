@@ -8,7 +8,7 @@
 ---
 
 ## 1. Phần việc chính đảm nhiệm trong dự án
-- Thực hiện khảo sát nhu cầu người học ($n = 22$ học viên ngoài nhóm) và phân tích định lượng (72.7% học viên học thụ động chỉ nhớ lướt ý chính; 72.7% xác nhận việc biết chính xác vì sao sai giúp nhớ sâu hơn) để thiết lập Chuẩn A cho Bằng chứng (`data/survey_log.md`).
+- Thực hiện khảo sát nhu cầu người học ($n = 22$ học viên ngoài nhóm) và phân tích định lượng (72.7% học viên học thụ động chỉ nhớ lướt ý chính; 72.7% xác nhận việc biết chính xác vì sao sai giúp nhớ sâu hơn) để thiết lập Chuẩn A cho Bằng chứng (`eval/survey_log.md`).
 - Khai phá dữ liệu chatlog thực tế K4 ($3.097$ lượt của 448 học viên, trích xuất $819$ lượt gặp khó khăn về khái niệm và $304$ lượt tutor phải sửa trực tiếp) để thiết lập Chuẩn B.
 - Cùng bạn Hoàng Anh Tài xây dựng bộ dữ liệu kiểm thử vàng (**Golden Set**) gồm 20 case bao phủ 4 tầng chỗ khó, đặc biệt là các case phát triển từ chatlog thật.
 - Đồng thực hiện chạy kiểm thử tự động trên harness (`eval/run_eval.py`), đối chiếu kết quả đo lường với Quality Bar đã cam kết.

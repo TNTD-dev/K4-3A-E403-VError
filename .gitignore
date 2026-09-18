@@ -58,3 +58,9 @@ dist-ssr/
 # Cache directories
 .uv_cache/
 scratch_cache/
+
+# Databases
+*.sqlite
+*.sqlite3
+*.db
+
