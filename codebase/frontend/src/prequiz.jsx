@@ -6,21 +6,6 @@ export const BASIS = ["Đã học trước đó", "Suy luận", "Đoán", "Chưa
 
 export const pad = number => String(number).padStart(2, "0");
 
-export function GenerationBadge({ generation, liveLabel = "AI thật", reviewedLabel = "Nội dung đã duyệt" }) {
-  if (!generation || generation.state === "idle") return null;
-  if (generation.state === "loading") {
-    return <span className="gen-badge loading"><span className="mini-spinner" />Agent đang xử lý</span>;
-  }
-  if (generation.state === "live") {
-    return <span className="gen-badge live"><Icon name="sparkles" size={14} />{liveLabel}{generation.model ? ` · ${generation.model}` : ""}</span>;
-  }
-  return (
-    <span className="gen-badge reviewed" title={generation.fallbackReason || undefined}>
-      <Icon name="check" size={14} />{reviewedLabel}{generation.fallbackReason ? " · fallback" : ""}
-    </span>
-  );
-}
-
 export function ChoiceGroup({ legend, name, options, value, onChange }) {
   return (
     <fieldset className="choice-group">
@@ -68,8 +53,8 @@ export function PreQuizLayer({ gate, section, flow, pending, onStart, onDraft, o
       <div className="stage-layer">
         <div className="prequiz-card compact" role="status">
           <span className="agent-orb"><span className="mini-spinner" /></span>
-          <h3>Slide Agent đang đọc cấu trúc bài học</h3>
-          <p className="muted">Đang nhận diện slide tiêu đề của từng phần để đặt pre-quiz đúng chỗ…</p>
+          <h3>Đang đọc cấu trúc bài học</h3>
+          <p className="muted">Đang gắn pre-quiz vào đúng phần trong slide…</p>
         </div>
       </div>
     );
@@ -81,7 +66,7 @@ export function PreQuizLayer({ gate, section, flow, pending, onStart, onDraft, o
         <div className="prequiz-card compact" role="alert">
           <span className="agent-orb warn">!</span>
           <h3>Chưa kết nối được VError API</h3>
-          <p className="muted">Slide sau trang bìa được giữ lại cho đến khi Agent đọc được tiến độ học.</p>
+          <p className="muted">Slide sau trang bìa được giữ lại cho đến khi tải được tiến độ học.</p>
           <button type="button" className="btn-primary" onClick={() => window.location.reload()}>Tải lại</button>
         </div>
       </div>
@@ -130,10 +115,10 @@ export function PreQuizLayer({ gate, section, flow, pending, onStart, onDraft, o
         <div className="prequiz-card compact" role="status">
           <span className="agent-orb"><span className="mini-spinner" /></span>
           <p className="pq-chip">Pre-quiz · Phần {pad(section.number)}</p>
-          <h3>Question Agent đang soạn câu hỏi</h3>
+          <h3>Đang soạn câu hỏi</h3>
           <p className="muted">
-            Agent đã nhận diện <b>trang {section.titlePage}</b> là slide tiêu đề “{section.title}”.
-            Đang đọc nguồn đã duyệt để đặt một câu hỏi trước khi bạn đọc tiếp…
+            Phần này bắt đầu từ <b>trang {section.titlePage}</b> — “{section.title}”.
+            Đặt một câu hỏi trước khi bạn đọc tiếp…
           </p>
         </div>
       </div>
@@ -152,11 +137,10 @@ export function PreQuizLayer({ gate, section, flow, pending, onStart, onDraft, o
       >
         <div className="pq-top">
           <span className="pq-chip">Pre-quiz · Phần {pad(section.number)}</span>
-          <GenerationBadge generation={flow.generation} liveLabel="Câu hỏi AI thật" reviewedLabel="Câu hỏi đã duyệt" />
         </div>
         <p className="pq-context">
           <Icon name="sparkles" size={16} />
-          <span>Agent nhận diện trang {section.titlePage} là slide tiêu đề “{section.title}”. Dự đoán trước — slide mở ngay khi bạn gửi.</span>
+          <span>Trang {section.titlePage} là tiêu đề “{section.title}”. Dự đoán trước — slide mở ngay khi bạn gửi.</span>
         </p>
         <h3>{item.title}</h3>
         <blockquote className="pq-statement">{item.statement}</blockquote>
@@ -176,10 +160,10 @@ export function PreQuizLayer({ gate, section, flow, pending, onStart, onDraft, o
 
 function toastCopy(flow, keyCount) {
   const status = flow.evaluation?.status;
-  if (status === "incorrect") return `Agent thấy một giả định cần đối chiếu với ${keyCount || "các"} slide trọng tâm.`;
+  if (status === "incorrect") return `Có một giả định cần đối chiếu với ${keyCount || "các"} slide trọng tâm.`;
   if (status === "correct") return "Bạn đang đúng hướng — xem slide trọng tâm để giảng lại chắc hơn.";
   if (status === "out_of_scope") return "Câu trả lời đi ra ngoài phạm vi bài — đọc slide trọng tâm để thu hẹp lại.";
-  return "Agent chưa đủ căn cứ để kết luận — đọc slide trọng tâm rồi thử lại.";
+  return "Chưa đủ căn cứ để kết luận — đọc slide trọng tâm rồi thử lại.";
 }
 
 export function QuizToast({ flow, keyCount, onGo, onClose }) {

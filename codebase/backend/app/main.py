@@ -9,6 +9,7 @@ from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from .coach import Coach
 from .content import DEFAULT_LEARNER, item_by_id, item_for_section, source, source_catalog, source_version_info
+from .evaluator import public_checklist
 from .db import Store
 from .orchestrator import DomainError, Orchestrator
 from .schemas import AttemptBody, CreateSessionBody, ExplainBody, HintBody, KeyInsightBody, StateVersionBody, TransferBody
@@ -130,7 +131,14 @@ def key_insight(section_id: str, body: KeyInsightBody):
         attempts = store.attempts(body.sessionId)
         attempt = dict(attempts[-1]) if attempts else None
     try:
-        return {"sectionId": section_id, **slide_agent.key_insight(section_id, attempt)}
+        payload = slide_agent.key_insight(section_id, attempt)
+        item = item_for_section(section_id)
+        if item:
+            payload["reinforce"] = {
+                "explain": public_checklist(item["itemId"], "explain"),
+                "transfer": public_checklist(item["itemId"], "transfer"),
+            }
+        return {"sectionId": section_id, **payload}
     except FileNotFoundError:
         raise HTTPException(404, "PDF_NOT_FOUND")
 
@@ -138,6 +146,7 @@ def key_insight(section_id: str, body: KeyInsightBody):
 @app.post("/api/v1/progress/reset")
 def reset_progress():
     store.reset_progress(api.learner_id)
+    slide_agent.reset()
     return api.sections()
 
 

@@ -509,7 +509,8 @@ h1, h2, h3, h4, p { margin: 0; }
 .sb-link.kc.done small { color: var(--green); }
 .sb-link.kc.next small { color: var(--blue); font-weight: 500; }
 .sb-link:disabled { color: #a3abb2; }
-.sb-reset { display: inline-flex; align-items: center; gap: 8px; margin: 8px 20px 4px 30px; padding: 7px 12px; border: 1px dashed var(--line-2); border-radius: 8px; color: var(--muted); background: #fff; font-size: 13.5px; }
+.sb-foot { padding: 12px 20px 20px; border-top: 1px solid var(--line); }
+.sb-reset { display: inline-flex; align-items: center; gap: 8px; width: 100%; justify-content: center; margin: 0; padding: 10px 12px; border: 1px dashed var(--line-2); border-radius: 8px; color: var(--muted); background: #fff; font-size: 13.5px; }
 .sb-reset:hover { border-color: var(--red); color: var(--red); }
 
 /* ---------- main column ---------- */
@@ -762,6 +763,40 @@ h1, h2, h3, h4, p { margin: 0; }
 .steps li.done { color: var(--green); }
 .steps li.done span { border-color: var(--green); color: #fff; background: var(--green); }
 .steps li.now { color: var(--blue); font-weight: 500; }
+.step-hit {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-weight: inherit;
+}
+.step-hit:disabled { opacity: 0.55; cursor: default; }
+.claim-list { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.claim-list li { display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; background: #fcfdfe; font-size: 14.5px; color: var(--ink); }
+.claim-list li span { display: grid; place-items: center; flex: none; width: 22px; height: 22px; margin-top: 1px; border-radius: 50%; font-size: 12px; font-weight: 700; }
+.claim-list li.wait span { color: var(--muted); background: var(--soft); }
+.claim-list li.yes { border-color: #b7e0c8; background: var(--green-50); }
+.claim-list li.yes span { color: #fff; background: var(--green); }
+.claim-list li.no { border-color: #f0d39a; background: var(--amber-50); }
+.claim-list li.no span { color: #fff; background: var(--amber); }
+.cite-link {
+  display: inline;
+  margin-right: 8px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--blue);
+  font: inherit;
+  font-size: 12.5px;
+  text-decoration: underline;
+}
+.reinforce-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.char-count { display: block; margin-top: 4px; color: var(--muted); font-size: 12px; text-align: right; }
 .reinforce-body { display: grid; gap: 12px; max-width: 760px; }
 .reinforce-body.done { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; max-width: none; }
 .reinforce-body.done > div { flex: 1; min-width: 200px; }

@@ -1,4 +1,4 @@
-from app.evaluator import evaluate_attempt, evaluate_explain_back, evaluate_transfer, verify_coach_draft
+from app.evaluator import evaluate_attempt, evaluate_explain_back, evaluate_transfer, merge_claim_coverage, verify_coach_draft
 from app.coach import Coach
 from app.sections import SECTIONS
 
@@ -32,7 +32,19 @@ def test_safe_and_learning_checks_section_one():
     assert evaluate_attempt("Giá API bao nhiêu?", "Chi phí cụ thể tokenization detail", "Suy luận", item)["status"] == "out_of_scope"
     assert evaluate_attempt("Không nhất thiết, prompt rõ Task + Format có thể tốt hơn prompt dài.", "Role chỉ thêm khi cải thiện kết quả.", "Suy luận", item)["status"] == "correct"
     assert evaluate_explain_back("Prompt rõ nghĩa thay vì prompt dài lan man. Bắt đầu với Task + Format. Token thừa tăng chi phí và nhiễu.", item)["pass"]
-    assert evaluate_transfer("Không nhất thiết, chọn prompt rõ Task và Format JSON.", "Chỉ thêm Context khi cần cho task, không phải lúc nào cũng thêm role.", item)
+    assert evaluate_transfer("Không nhất thiết, chọn prompt rõ Task và Format JSON.", "Chỉ thêm Context khi cần cho task, không phải lúc nào cũng thêm role.", item)["pass"]
+
+
+def test_reinforce_merges_regex_hits_with_model_paraphrase():
+    required = ["a", "b", "c"]
+    present, missing = merge_claim_coverage(required, ["a"], ["a", "c", "invented"])
+    assert present == ["a", "c"]
+    assert missing == ["b"]
+    review = Coach("offline").review_explain("chỉ nói task và format", "day04-s01-specificity")
+    assert review["provider"] == "offline"
+    assert "task_and_format_first" in review["draft"]["presentClaimIds"]
+    assert review["draft"]["missingClaimIds"]
+    assert "specificity_beats_cleverness" not in review["draft"]["learnerMessage"]
 
 
 def test_offline_coach_is_deterministic_without_network():

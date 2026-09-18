@@ -120,6 +120,90 @@ def test_offline_correction_flow_section_one():
     assert retry.json()["next"]["state"] == "explain_back"
 
 
+def _open_explain(c):
+    session = c.post("/api/v1/sessions", json={"sectionId": "prompt-fundamentals"}).json()
+    sid = session["sessionId"]
+    first = c.post(
+        f"/api/v1/sessions/{sid}/attempts",
+        headers={"Idempotency-Key": f"explain-open-{sid[:8]}"},
+        json={
+            "stateVersion": 1,
+            "kind": "attempt_1",
+            "answer": {
+                "text": "Không nhất thiết, prompt rõ Task + Format có thể tốt hơn prompt dài.",
+                "explanation": "Role chỉ thêm khi cải thiện kết quả.",
+            },
+            "basis": "Suy luận",
+        },
+    )
+    body = first.json()
+    assert body["next"]["state"] == "explain_back"
+    return c, sid, body["stateVersion"]
+
+
+def test_explain_back_returns_vietnamese_checklist_not_claim_ids():
+    c = client()
+    _, sid, version = _open_explain(c)
+    weak = c.post(
+        f"/api/v1/sessions/{sid}/explain-back",
+        json={"stateVersion": version, "text": "Prompt ngắn nhưng rõ task, context, format thì agent làm đúng hơn."},
+    )
+    body = weak.json()
+    assert body["next"]["state"] == "explain_back"
+    labels = [row["label"] for row in body["evaluation"]["claims"]]
+    assert labels
+    assert all(row.get("present") is not None for row in body["evaluation"]["claims"])
+    dumped = json.dumps(body)
+    assert "specificity_beats_cleverness" not in dumped
+    assert "missingClaimIds" not in dumped
+    assert body["coach"]["message"]
+    assert "Còn thiếu" in body["coach"]["message"] or "chạm được" in body["coach"]["message"]
+
+    strong = c.post(
+        f"/api/v1/sessions/{sid}/explain-back",
+        json={
+            "stateVersion": body["stateVersion"],
+            "text": "Prompt rõ nghĩa thay vì prompt dài lan man. Bắt đầu với Task + Format. Token thừa tăng chi phí và nhiễu.",
+        },
+    )
+    passed = strong.json()
+    assert passed["next"]["state"] == "transfer_check"
+    assert passed["evaluation"]["status"] == "pass"
+    assert all(row["present"] for row in passed["evaluation"]["claims"])
+
+    transfer = c.post(
+        f"/api/v1/sessions/{sid}/transfer",
+        json={
+            "stateVersion": passed["stateVersion"],
+            "answer": "Không nhất thiết, chọn prompt rõ Task và Format JSON.",
+            "reasoning": "Chỉ thêm Context khi cần cho task, không phải lúc nào cũng thêm role.",
+        },
+    )
+    done = transfer.json()
+    assert done["next"]["state"] == "completed"
+    assert done["evaluation"]["status"] == "pass"
+    assert done["coach"]["message"]
+    assert "specificity_beats_cleverness" not in json.dumps(done)
+
+
+def test_key_insight_includes_reinforce_checklist_without_ids():
+    c = client()
+    session = c.post("/api/v1/sessions", json={"sectionId": "prompt-fundamentals"}).json()
+    c.post(
+        f"/api/v1/sessions/{session['sessionId']}/attempts",
+        headers={"Idempotency-Key": "insight-reinforce-01"},
+        json={
+            "stateVersion": 1,
+            "kind": "attempt_1",
+            "answer": {"text": "Đồng ý, prompt càng dài càng tốt.", "explanation": "Nhiều context giúp model hiểu hơn."},
+        },
+    )
+    body = c.post("/api/v1/sections/prompt-fundamentals/key-insight", json={"sessionId": session["sessionId"]}).json()
+    assert len(body["reinforce"]["explain"]) == 3
+    assert all("label" in row for row in body["reinforce"]["explain"])
+    assert "specificity_beats_cleverness" not in json.dumps(body["reinforce"])
+
+
 def test_legacy_item_alias_still_opens_section_one():
     c = client()
     body = c.post("/api/v1/sessions", json={"itemId": "prompt-clarity-01"}).json()

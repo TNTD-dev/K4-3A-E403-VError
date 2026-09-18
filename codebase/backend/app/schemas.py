@@ -60,13 +60,13 @@ class HintBody(StrictModel):
 
 class ExplainBody(StrictModel):
     stateVersion: int = Field(gt=0)
-    text: str = Field(min_length=1, max_length=500)
+    text: str = Field(min_length=1, max_length=800)
 
 
 class TransferBody(StrictModel):
     stateVersion: int = Field(gt=0)
-    answer: str = Field(max_length=500)
-    reasoning: str = Field(max_length=500)
+    answer: str = Field(max_length=800)
+    reasoning: str = Field(max_length=800)
 
 
 class KeyInsightBody(StrictModel):
@@ -82,5 +82,12 @@ class CoachDraft(StrictModel):
     diagnosisCode: str | None
     confidence: Literal["high", "medium", "low"]
     hintLevel: Literal[1, 2, 3] | None
+    citationIds: list[str] = Field(max_length=2)
+    learnerMessage: str = Field(min_length=1, max_length=500)
+
+
+class ReinforceDraft(StrictModel):
+    presentClaimIds: list[str] = Field(max_length=8)
+    missingClaimIds: list[str] = Field(max_length=8)
     citationIds: list[str] = Field(max_length=2)
     learnerMessage: str = Field(min_length=1, max_length=500)

@@ -13,7 +13,7 @@ from .content import (
     source_version_info,
 )
 from .db import Store
-from .evaluator import evaluate_attempt, evaluate_explain_back, evaluate_transfer
+from .evaluator import evaluate_attempt, public_checklist
 from .schemas import AttemptBody, ExplainBody, HintBody, TransferBody
 from .sections import section
 
@@ -191,6 +191,19 @@ class Orchestrator:
                 "pages": [c["page"] for c in cited if c.get("page")],
                 "excerpts": [c["excerpt"] for c in cited],
             },
+        }
+
+    def reinforce_payload(self, result: dict[str, Any], status: str) -> dict[str, Any]:
+        draft = result["draft"]
+        cited = citations(draft["citationIds"])
+        return {
+            "status": status,
+            "provider": result["provider"],
+            "model": result.get("model"),
+            "fallback": result.get("provider") != "openai",
+            "fallbackReason": result.get("fallbackReason"),
+            "message": draft["learnerMessage"],
+            "citations": cited,
         }
 
     def submit_attempt(self, session_id: str, body: AttemptBody) -> dict[str, Any]:
@@ -442,22 +455,29 @@ class Orchestrator:
             raise DomainError("STATE_VERSION_CONFLICT", 409)
         if row["state"] != "explain_back":
             raise DomainError("INVALID_STATE", 409)
-        evaluation = evaluate_explain_back(body.text, row["item_id"])
-        next_state = "transfer_check" if evaluation["pass"] else "explain_back"
+        result = self.coach.review_explain(body.text, row["item_id"])
+        draft = result["draft"]
+        passed = not draft["missingClaimIds"]
+        next_state = "transfer_check" if passed else "explain_back"
         next_row = self.transition(row, next_state)
         self.store.event(
             session_id,
             "explain_back_submitted",
             {
                 "input_chars": len(body.text),
-                "claims": evaluation["claims"],
-                "missing_claim_ids": evaluation["missingClaimIds"],
-                "pass": evaluation["pass"],
+                "claims": draft["presentClaimIds"],
+                "missing_claim_ids": draft["missingClaimIds"],
+                "pass": passed,
+                "provider": result["provider"],
             },
         )
         return {
             "stateVersion": next_row["state_version"],
-            "evaluation": {"status": "pass" if evaluation["pass"] else "needs_revision", **evaluation},
+            "evaluation": {
+                "status": "pass" if passed else "needs_revision",
+                "claims": public_checklist(row["item_id"], "explain", draft["presentClaimIds"], draft["missingClaimIds"]),
+            },
+            "coach": self.reinforce_payload(result, "pass" if passed else "needs_revision"),
             "next": {"state": next_state},
         }
 
@@ -467,13 +487,21 @@ class Orchestrator:
             raise DomainError("STATE_VERSION_CONFLICT", 409)
         if row["state"] != "transfer_check":
             raise DomainError("INVALID_STATE", 409)
-        passed = evaluate_transfer(body.answer, body.reasoning, row["item_id"])
+        result = self.coach.review_transfer(body.answer, body.reasoning, row["item_id"])
+        draft = result["draft"]
+        passed = not draft["missingClaimIds"]
         next_state = "completed" if passed else "transfer_check"
         next_row = self.transition(row, next_state)
         self.store.event(
             session_id,
             "transfer_submitted",
-            {"input_chars": len(body.answer) + len(body.reasoning), "pass": passed},
+            {
+                "input_chars": len(body.answer) + len(body.reasoning),
+                "claims": draft["presentClaimIds"],
+                "missing_claim_ids": draft["missingClaimIds"],
+                "pass": passed,
+                "provider": result["provider"],
+            },
         )
         progress = self.store.progress(self.learner_id)
         if passed:
@@ -481,7 +509,11 @@ class Orchestrator:
             self.store.event(session_id, "session_completed", {"mastery_status": "demonstrated_in_session", "section_id": row["section_id"]})
         return {
             "stateVersion": next_row["state_version"],
-            "evaluation": {"status": "pass" if passed else "needs_revision"},
+            "evaluation": {
+                "status": "pass" if passed else "needs_revision",
+                "claims": public_checklist(row["item_id"], "transfer", draft["presentClaimIds"], draft["missingClaimIds"]),
+            },
+            "coach": self.reinforce_payload(result, "pass" if passed else "needs_revision"),
             "next": {"state": next_state},
             "progress": {
                 "unlockedAttempts": sorted(progress["unlockedAttempts"]),

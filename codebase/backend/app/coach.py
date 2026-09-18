@@ -1,9 +1,19 @@
 from __future__ import annotations
 import json, os
 from typing import Any
-from .content import CITATION_SUPPORT, answer_key_for
-from .evaluator import reviewed_hint, verify_coach_draft
-from .schemas import CoachDraft
+from .content import CITATION_SUPPORT, ITEMS_BY_ID, answer_key_for, sources_for_item
+from .evaluator import (
+    CLAIM_LABELS,
+    claim_ids_for,
+    evaluate_explain_back,
+    evaluate_transfer,
+    merge_claim_coverage,
+    reinforce_message,
+    reviewed_hint,
+    verify_coach_draft,
+    verify_reinforce_draft,
+)
+from .schemas import CoachDraft, ReinforceDraft
 
 
 class Coach:
@@ -104,3 +114,98 @@ class Coach:
             detail = str(error).replace(os.getenv("OPENAI_API_KEY", "") or "\0", "[redacted]")
             detail = " ".join(detail.split())[:160]
             return {"provider": "offline", "model": None, "fallbackReason": f"{type(error).__name__}: {detail}".rstrip(": "), "draft": draft}
+
+    def review_explain(self, text: str, item_id: str) -> dict[str, Any]:
+        regex = evaluate_explain_back(text, item_id)
+        return self._review("explain", text, item_id, regex)
+
+    def review_transfer(self, answer: str, reasoning: str, item_id: str) -> dict[str, Any]:
+        regex = evaluate_transfer(answer, reasoning, item_id)
+        combined = f"{answer}\n{reasoning}".strip()
+        return self._review("transfer", combined, item_id, regex)
+
+    def _offline_review(self, kind: str, item_id: str, regex: dict[str, Any], reason: str | None = None) -> dict[str, Any]:
+        present, missing = regex["claims"], regex["missingClaimIds"]
+        source_ids = [item["sourceId"] for item in sources_for_item(item_id)]
+        draft = {
+            "presentClaimIds": present,
+            "missingClaimIds": missing,
+            "citationIds": source_ids[:1] if missing else [],
+            "learnerMessage": reinforce_message(kind, present, missing),
+        }
+        return {"provider": "offline", "model": None, "fallbackReason": reason, "draft": draft}
+
+    def _review(self, kind: str, text: str, item_id: str, regex: dict[str, Any]) -> dict[str, Any]:
+        required = claim_ids_for(item_id, kind)
+        source_ids = [item["sourceId"] for item in sources_for_item(item_id)]
+        offline = self._offline_review(kind, item_id, regex)
+        if self.mode != "live" or not os.getenv("OPENAI_API_KEY"):
+            return offline
+        rubric = [{"id": key, "label": CLAIM_LABELS.get(key, key)} for key in required]
+        transfer_prompt = (ITEMS_BY_ID.get(item_id) or {}).get("transfer", {}).get("prompt")
+        try:
+            from openai import OpenAI
+
+            client = OpenAI(api_key=os.environ["OPENAI_API_KEY"], timeout=20, max_retries=1)
+            response = client.responses.create(
+                model=os.getenv("OPENAI_MODEL", "gpt-4o-mini"),
+                max_output_tokens=600,
+                text={
+                    "format": {
+                        "type": "json_schema",
+                        "name": "reinforce_draft",
+                        "schema": ReinforceDraft.model_json_schema(),
+                        "strict": True,
+                    }
+                },
+                input=[
+                    {
+                        "role": "system",
+                        "content": (
+                            "Bạn là D2 Coach trên VLearn, viết tiếng Việt, giọng thầy đi cùng chứ không chấm điểm. "
+                            "Đọc câu của học viên và quyết định ý nào trong rubric đã được nói (kể cả diễn đạt khác chữ). "
+                            "Không đánh present vì lịch sự. Không viết đoạn đáp án để chép. "
+                            "learnerMessage: khen ý đã có, chỉ ý còn thiếu, gợi mở đúng slide nguồn — dưới 400 chữ. "
+                            "presentClaimIds / missingClaimIds chỉ dùng id trong rubric. "
+                            "citationIds subset của allowedSourceIds, tối đa 2, ưu tiên nguồn cho ý đang thiếu."
+                        ),
+                    },
+                    {
+                        "role": "user",
+                        "content": json.dumps(
+                            {
+                                "kind": kind,
+                                "itemId": item_id,
+                                "learnerText": text,
+                                "rubric": rubric,
+                                "transferPrompt": transfer_prompt if kind == "transfer" else None,
+                                "allowedSourceIds": source_ids,
+                            },
+                            ensure_ascii=False,
+                        ),
+                    },
+                ],
+            )
+            parsed = json.loads(response.output_text or "{}")
+            ok, reason, checked = verify_reinforce_draft(parsed, required, source_ids)
+            if not ok or checked is None:
+                return self._offline_review(kind, item_id, regex, f"verifier_{reason}")
+            present, missing = merge_claim_coverage(required, regex["claims"], checked.presentClaimIds)
+            citations = [item for item in checked.citationIds if item in source_ids][:2]
+            if missing and not citations:
+                citations = source_ids[:1]
+            return {
+                "provider": "openai",
+                "model": os.getenv("OPENAI_MODEL", "gpt-4o-mini"),
+                "fallbackReason": None,
+                "draft": {
+                    "presentClaimIds": present,
+                    "missingClaimIds": missing,
+                    "citationIds": citations,
+                    "learnerMessage": checked.learnerMessage,
+                },
+            }
+        except Exception as error:
+            detail = str(error).replace(os.getenv("OPENAI_API_KEY", "") or "\0", "[redacted]")
+            detail = " ".join(detail.split())[:160]
+            return self._offline_review(kind, item_id, regex, f"{type(error).__name__}: {detail}".rstrip(": "))

@@ -195,6 +195,12 @@ class SlideAgent:
         return self._pages
 
     # ------------------------------------------------------------------ outline
+    def reset(self) -> None:
+        """Drop cached outline and insights so the next read analyses the deck again."""
+        with self._lock:
+            self._outline = None
+            self._insights.clear()
+
     def outline(self, refresh: bool = False) -> dict[str, Any]:
         with self._lock:
             if self._outline is None or refresh:

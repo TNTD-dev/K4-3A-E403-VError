@@ -2,7 +2,7 @@ from __future__ import annotations
 import re
 from typing import Any
 from .content import ANSWER_KEYS, CITATION_SUPPORT, approved_pages, source
-from .schemas import CoachDraft
+from .schemas import CoachDraft, ReinforceDraft
 
 LOW_SIGNAL = re.compile(r"asdf|abc|test|\?+|không biết gì", re.I)
 
@@ -207,6 +207,109 @@ TRANSFER_PATTERNS: dict[str, list[str]] = {
     "day04-s08-lab-evidence": [r"trực tiếp|direct|không cần tool", r"gọi tool|tool", r"test"],
 }
 
+TRANSFER_CLAIM_IDS: dict[str, list[str]] = {
+    "day04-s01-specificity": ["transfer_task", "transfer_format", "transfer_condition"],
+    "day04-s02-technique-order": ["transfer_zero_shot", "transfer_format_task", "transfer_when_advanced"],
+    "day04-s03-system-policy": ["transfer_rule", "transfer_constraint", "transfer_output_contract"],
+    "day04-s04-context-select": ["transfer_select", "transfer_compress", "transfer_no_dump"],
+    "day04-s05-tool-loop": ["transfer_model_decides", "transfer_app_runs", "transfer_result_back"],
+    "day04-s06-tool-granularity": ["transfer_named_action", "transfer_tool", "transfer_split"],
+    "day04-s07-parallel-deps": ["transfer_parallel", "transfer_independent", "transfer_merge"],
+    "day04-s08-lab-evidence": ["transfer_direct", "transfer_tool_path", "transfer_tests"],
+}
+
+CLAIM_LABELS: dict[str, str] = {
+    "specificity_beats_cleverness": "Prompt rõ/cụ thể thắng prompt dài hay khéo chữ",
+    "task_and_format_first": "Bắt đầu từ Task và Format, không nhồi cho đủ thành phần",
+    "extra_prompt_can_add_cost_or_noise": "Token/thành phần thừa tốn chi phí hoặc gây nhiễu",
+    "try_simple_first": "Thử cách đơn giản / zero-shot trước",
+    "cot_not_magic": "CoT không phải phép màu cho mọi task",
+    "advanced_is_conditional": "Few-shot/CoT chỉ dùng khi có điều kiện",
+    "system_is_policy": "System prompt là lớp policy, không phải đoạn văn cho dài",
+    "clear_boundaries": "Cần rules / constraint / giới hạn rõ",
+    "avoid_vague_system": "Tránh persona mơ hồ; output phải kiểm được",
+    "context_should_be_selected": "Chỉ chọn context cần cho task",
+    "compress_or_drop": "Nén, bỏ, hoặc archive phần không dùng",
+    "token_budget_active": "Chủ động giữ chỗ token cho output",
+    "app_executes_tool": "App mới chạy tool — model không tự execute",
+    "tool_loop": "Gửi result về model rồi mới có câu trả lời cuối",
+    "schema_guides_choice": "Schema / mô tả tool giúp model chọn đúng",
+    "single_responsibility": "Một tool một việc, ranh giới rõ",
+    "sensible_granularity": "Không quá to cũng không tách quá nhỏ",
+    "test_tools_independently": "Tool phải test được độc lập",
+    "parallel_needs_independence": "Chỉ song song khi không phụ thuộc dữ liệu",
+    "control_flow_first": "Control flow (khi nào/thứ tự) quan trọng hơn tốc độ",
+    "merge_or_verify": "Phải gộp hoặc kiểm tra kết quả sau khi gọi tool",
+    "lab_needs_tests": "Lab cần bộ test, không chỉ chạy demo một lần",
+    "deliverable_bundle": "Đủ system prompt, tool và agent",
+    "classify_failure_type": "Phân loại lỗi prompt / tool / control flow",
+    "transfer_task": "Chọn theo Task / nhiệm vụ cụ thể",
+    "transfer_format": "Nêu Format / JSON (đầu ra cần ra sao)",
+    "transfer_condition": "Nêu điều kiện: không phải lúc nào cũng thêm role/context",
+    "transfer_zero_shot": "Bắt đầu zero-shot / cách đơn giản",
+    "transfer_format_task": "Task format/extract thì không nhảy kỹ thuật nặng",
+    "transfer_when_advanced": "Few-shot/CoT chỉ khi có lý do",
+    "transfer_rule": "Có 1 rule / quy tắc",
+    "transfer_constraint": "Có 1 constraint / điều không được làm",
+    "transfer_output_contract": "Có output contract (JSON/format)",
+    "transfer_select": "Chọn đúng file/context cần",
+    "transfer_compress": "Summarize / drop / archive phần còn lại",
+    "transfer_no_dump": "Không nhét hết repo/history",
+    "transfer_model_decides": "Model chỉ quyết định tool_call",
+    "transfer_app_runs": "App execute tool",
+    "transfer_result_back": "Result quay lại model rồi mới final",
+    "transfer_named_action": "Tên tool là hành động nghiệp vụ rõ",
+    "transfer_tool": "Có tool, không gộp siêu tool",
+    "transfer_split": "Tách thành hơn một việc khi ôm quá nhiều",
+    "transfer_parallel": "Biết khi nào được gọi song song",
+    "transfer_independent": "Song song chỉ khi độc lập dữ liệu",
+    "transfer_merge": "Phải merge/verify sau parallel",
+    "transfer_direct": "Có câu trả lời trực tiếp, không cần tool",
+    "transfer_tool_path": "Có câu phải gọi tool",
+    "transfer_tests": "Cần test để phân biệt hai nhánh đó",
+}
+
+
+def _transfer_checks(item_id: str) -> list[tuple[str, Any]]:
+    ids = TRANSFER_CLAIM_IDS.get(item_id, TRANSFER_CLAIM_IDS["day04-s01-specificity"])
+    patterns = TRANSFER_PATTERNS.get(item_id, TRANSFER_PATTERNS["day04-s01-specificity"])
+    return [(claim_id, lambda t, p=pattern: bool(re.search(p, t, re.I))) for claim_id, pattern in zip(ids, patterns)]
+
+
+def claim_ids_for(item_id: str, kind: str) -> list[str]:
+    if kind == "transfer":
+        return list(TRANSFER_CLAIM_IDS.get(item_id, TRANSFER_CLAIM_IDS["day04-s01-specificity"]))
+    checks = EXPLAIN_CHECKS.get(item_id, EXPLAIN_CHECKS["day04-s01-specificity"])
+    return [key for key, _ in checks]
+
+
+def public_checklist(item_id: str, kind: str, present_ids: list[str] | None = None, missing_ids: list[str] | None = None) -> list[dict[str, Any]]:
+    required = claim_ids_for(item_id, kind)
+    present = set(present_ids or [])
+    missing = set(missing_ids or [])
+    rows = []
+    for key in required:
+        state = None
+        if present_ids is not None or missing_ids is not None:
+            state = key not in missing and (key in present or present_ids is None)
+        rows.append({"label": CLAIM_LABELS.get(key, key), "present": state})
+    return rows
+
+
+def reinforce_message(kind: str, present_ids: list[str], missing_ids: list[str]) -> str:
+    present_labels = [CLAIM_LABELS.get(key, key) for key in present_ids]
+    missing_labels = [CLAIM_LABELS.get(key, key) for key in missing_ids]
+    if not missing_ids:
+        if kind == "explain":
+            return "Đủ ý chính rồi. Bước tiếp theo: áp dụng vào một case ngắn — nói hướng xử lý và điều kiện, không chép lại lý thuyết."
+        return "Case này bám đúng phần. Bạn đã chứng minh là hiểu, không chỉ trả lời đúng một lần."
+    bits = []
+    if present_labels:
+        bits.append("Bạn đã chạm được: " + "; ".join(present_labels) + ".")
+    bits.append("Còn thiếu: " + "; ".join(missing_labels) + ".")
+    bits.append("Mở lại slide trọng tâm, viết thêm những ý còn thiếu bằng lời của bạn — không cần dùng đúng từng chữ trên slide.")
+    return " ".join(bits)
+
 OFFLINE_HINTS: dict[str, dict[int, tuple[str, list[str]]]] = {
     "M_PROMPT_LONGER_BETTER": {
         1: ("Mở PDF p.7: tìm nguyên tắc phân biệt specificity với cleverness. Phần nào giúp model biết đúng việc?", ["D04-P07", "D04-P10"]),
@@ -394,7 +497,37 @@ def evaluate_explain_back(text: str, item_id: str = "day04-s01-specificity") -> 
     }
 
 
-def evaluate_transfer(answer: str, reasoning: str, item_id: str = "day04-s01-specificity") -> bool:
-    text = f"{answer} {reasoning}"
-    patterns = TRANSFER_PATTERNS.get(item_id, TRANSFER_PATTERNS["day04-s01-specificity"])
-    return all(re.search(pattern, text, re.I) for pattern in patterns)
+def evaluate_transfer(answer: str, reasoning: str, item_id: str = "day04-s01-specificity") -> dict[str, Any]:
+    text = f"{answer} {reasoning}".lower()
+    results = [(key, bool(fn(text))) for key, fn in _transfer_checks(item_id)]
+    return {
+        "pass": all(ok for _, ok in results),
+        "claims": [key for key, ok in results if ok],
+        "missingClaimIds": [key for key, ok in results if not ok],
+    }
+
+
+def merge_claim_coverage(required: list[str], regex_present: list[str], model_present: list[str] | None) -> tuple[list[str], list[str]]:
+    """Regex hits always count; a verified model may add paraphrases. Model cannot drop a regex hit."""
+    allowed = set(required)
+    present = set(regex_present) & allowed
+    if model_present:
+        present |= set(model_present) & allowed
+    missing = [key for key in required if key not in present]
+    return [key for key in required if key in present], missing
+
+
+def verify_reinforce_draft(raw: Any, required: list[str], allowed_source_ids: list[str]) -> tuple[bool, str, ReinforceDraft | None]:
+    try:
+        draft = ReinforceDraft.model_validate(raw)
+    except Exception:
+        return False, "schema_invalid", None
+    allowed = set(required)
+    if any(item not in allowed for item in draft.presentClaimIds):
+        return False, "unknown_present_claim", None
+    if any(item not in allowed for item in draft.missingClaimIds):
+        return False, "unknown_missing_claim", None
+    allowed_sources = set(allowed_source_ids)
+    if any(item not in allowed_sources for item in draft.citationIds):
+        return False, "citation_not_supported", None
+    return True, "", draft

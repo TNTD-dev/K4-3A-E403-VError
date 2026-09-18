@@ -4,7 +4,7 @@ import { ACTIVE_DAY, lessonByDay } from "./course.js";
 import { Icon } from "./icons.jsx";
 import { InsightPanel, TeacherNotes } from "./insight.jsx";
 import { SlideSurface, useElementWidth, usePdf, useThumbnails } from "./pdf.jsx";
-import { GenerationBadge, PreQuizLayer, QuizToast, pad } from "./prequiz.jsx";
+import { PreQuizLayer, QuizToast, pad } from "./prequiz.jsx";
 
 const EMPTY_DRAFT = { answer: "", explanation: "", confidence: "", basis: "" };
 const EMPTY_FLOW = {
@@ -27,6 +27,7 @@ const EMPTY_FLOW = {
   keyPage: null,
   explain: "",
   transfer: { answer: "", reasoning: "" },
+  slideReviewed: false,
 };
 
 const STATE_MAP = {
@@ -213,6 +214,7 @@ export default function ReaderPage({ day, initialPage, onBack, onOpenDay }) {
           notice: "",
           explain: "",
           transfer: { answer: "", reasoning: "" },
+          slideReviewed: false,
         });
       } catch (error) {
         patchFlow(id, { phase: "error", error: error.message, generation });
@@ -308,16 +310,21 @@ export default function ReaderPage({ day, initialPage, onBack, onOpenDay }) {
   const requestHint = (id, level) => sessionCall(id, "hints", { level }, result => ({ coach: result.coach, answerState: "retry" }));
 
   const submitExplain = id =>
-    sessionCall(id, "explain-back", { text: flowsRef.current[id].explain.trim() }, result => ({
-      answerState: result.next.state === "transfer_check" ? "transfer" : "explain",
-      notice: result.evaluation.status === "pass" ? "" : `Còn thiếu ý: ${(result.evaluation.missingClaimIds || []).join(", ")}`,
-    }));
+    sessionCall(id, "explain-back", { text: flowsRef.current[id].explain.trim() }, result => {
+      const passed = result.next.state === "transfer_check";
+      return {
+        answerState: passed ? "transfer" : "explain",
+        coach: result.coach,
+        evaluation: passed ? { status: "pass", claims: null } : result.evaluation,
+        notice: "",
+      };
+    });
 
   const submitTransfer = id =>
     sessionCall(id, "transfer", flowsRef.current[id].transfer, result =>
       result.evaluation.status === "pass"
-        ? { answerState: "result", notice: "" }
-        : { notice: "Hãy bám đúng ý chính của phần và nêu điều kiện áp dụng." },
+        ? { answerState: "result", coach: result.coach, evaluation: result.evaluation, notice: "" }
+        : { answerState: "transfer", coach: result.coach, evaluation: result.evaluation, notice: "" },
     );
 
   const resumeSession = id =>
@@ -354,12 +361,8 @@ export default function ReaderPage({ day, initialPage, onBack, onOpenDay }) {
 
   async function resetDemo() {
     try {
-      const toc = await request("/api/v1/progress/reset", { method: "POST" });
-      setSections(toc.sections);
-      setFlows({});
-      setStrokes({});
-      startedRef.current = new Set();
-      if (outline?.sections[0]) showViewer(outline.sections[0].titlePage);
+      await request("/api/v1/progress/reset", { method: "POST" });
+      window.location.replace(`?day=${day}&page=1`);
     } catch (error) {
       setNotice(error.message);
     }
@@ -475,6 +478,9 @@ export default function ReaderPage({ day, initialPage, onBack, onOpenDay }) {
             <span>{deck ? `${completedCount}/${totalSections} phần` : "0/0 phần"}</span>
             <div className="rh-bar"><i style={{ width: `${progressPct}%` }} /></div>
           </div>
+          <button type="button" className="rh-action" onClick={resetDemo} title="Xóa tiến độ, phiên học và cache phân tích slide">
+            <Icon name="rotate" size={20} /> <span>Làm lại</span>
+          </button>
           <span className="rh-divider" aria-hidden="true" />
           <div className="pop-anchor">
             <button type="button" className="rh-action" data-popover-trigger onClick={() => setPopover(open => (open === "ask" ? null : "ask"))} aria-expanded={popover === "ask"}>
@@ -482,8 +488,8 @@ export default function ReaderPage({ day, initialPage, onBack, onOpenDay }) {
             </button>
             {popover === "ask" && (
               <div className="popover" role="dialog" aria-label="Đặt câu hỏi với AI">
-                <b>AI Agent đang học cùng bạn theo slide</b>
-                <p>Pre-quiz bật ngay sau mỗi slide tiêu đề, rồi Agent giải thích đúng slide trọng tâm. Chat tự do chưa mở trong prototype để Agent không dạy ngoài nguồn đã duyệt.</p>
+                <b>Hỏi theo đúng slide đang học</b>
+                <p>Pre-quiz hiện ngay sau mỗi slide tiêu đề, rồi phần kiến thức trọng tâm giải thích đúng trang đó. Chat tự do chưa mở để không dạy ngoài nguồn đã duyệt.</p>
                 {current && !currentStatus?.slidesLocked && (
                   <button type="button" className="btn-soft" onClick={() => { setPopover(null); goToInsight(current.sectionId); }}>
                     <Icon name="sparkles" size={16} /> Xem kiến thức trọng tâm Phần {pad(current.number)}
@@ -729,6 +735,7 @@ export default function ReaderPage({ day, initialPage, onBack, onOpenDay }) {
                       resume: () => resumeSession(current.sectionId),
                       restart: () => startAttempt(current.sectionId),
                       next: () => goNextSection(current.sectionId),
+                      markReviewed: () => patchFlow(current.sectionId, { slideReviewed: true }),
                     }}
                   />
                 ) : (
@@ -769,7 +776,6 @@ function sectionState(status) {
 }
 
 function Sidebar({ lesson, deck, outline, statusById, current, groups, toggle, onClose, goTo, onReset }) {
-  const agent = outline?.agent;
   return (
     <aside className="reader-sidebar" aria-label="Nội dung bài học">
       <div className="sb-head">
@@ -787,9 +793,8 @@ function Sidebar({ lesson, deck, outline, statusById, current, groups, toggle, o
             </button>
             {outline ? (
               <div className="sb-outline">
-                <p className="sb-agent" title={agent?.fallbackReason || undefined}>
-                  <Icon name="sparkles" size={14} />
-                  {agent?.generated ? `AI (${agent.model}) nhận diện` : "Agent nhận diện"} {outline.sections.length} slide tiêu đề
+                <p className="sb-agent">
+                  {outline.sections.length} phần · pre-quiz gắn sau mỗi slide tiêu đề
                 </p>
                 {outline.sections.map(item => {
                   const state = sectionState(statusById[item.sectionId]);
@@ -811,7 +816,7 @@ function Sidebar({ lesson, deck, outline, statusById, current, groups, toggle, o
                 })}
               </div>
             ) : (
-              <p className="sb-agent loading"><span className="mini-spinner" /> Agent đang đọc slide…</p>
+              <p className="sb-agent loading"><span className="mini-spinner" /> Đang đọc mục lục slide…</p>
             )}
           </>
         ) : (
@@ -847,21 +852,26 @@ function Sidebar({ lesson, deck, outline, statusById, current, groups, toggle, o
                 </button>
               );
             })}
-            <button type="button" className="sb-reset" onClick={onReset}>
-              <Icon name="rotate" size={15} /> Làm lại pre-quiz từ đầu (demo)
-            </button>
           </>
         ) : (
           <p className="sb-empty">Chưa có bài luyện tập.</p>
         )}
       </SidebarGroup>
+
+      {deck && (
+        <div className="sb-foot">
+          <button type="button" className="sb-reset" onClick={onReset}>
+            <Icon name="rotate" size={15} /> Làm lại từ đầu
+          </button>
+        </div>
+      )}
     </aside>
   );
 }
 
 function StageAgent({ open, toggle, page, outline, section, status, onInsight }) {
   let title = "Trang giới thiệu";
-  let body = `Agent đã nhận diện ${outline.sections.length} slide tiêu đề. Pre-quiz bật ở slide ngay sau mỗi tiêu đề.`;
+  let body = `${outline.sections.length} phần trong bài. Pre-quiz hiện ở slide ngay sau mỗi tiêu đề.`;
   let action = null;
   if (section) {
     const keySlide = section.keySlides.find(slide => slide.page === page);
@@ -880,14 +890,13 @@ function StageAgent({ open, toggle, page, outline, section, status, onInsight })
       if (!status?.slidesLocked) action = "insight";
     }
   }
-  const agent = outline.agent;
   return (
     <>
-      <button type="button" className="stage-ai" data-popover-trigger onClick={toggle} aria-label="AI Agent đọc slide này" aria-expanded={open}>
+      <button type="button" className="stage-ai" data-popover-trigger onClick={toggle} aria-label="Thông tin slide này" aria-expanded={open}>
         <Icon name="sparkles" size={22} />
       </button>
       {open && (
-        <div className="popover stage-pop" role="dialog" aria-label="AI Agent đọc slide">
+        <div className="popover stage-pop" role="dialog" aria-label="Thông tin slide">
           <b>{title}</b>
           <p>{body}</p>
           {action === "insight" && (
@@ -895,11 +904,6 @@ function StageAgent({ open, toggle, page, outline, section, status, onInsight })
               <Icon name="sparkles" size={16} /> Xem kiến thức trọng tâm
             </button>
           )}
-          <GenerationBadge
-            generation={{ state: agent.generated ? "live" : "reviewed", model: agent.model, fallbackReason: agent.fallbackReason }}
-            liveLabel="Outline do AI nhận diện"
-            reviewedLabel="Outline từ bộ đọc slide"
-          />
         </div>
       )}
     </>

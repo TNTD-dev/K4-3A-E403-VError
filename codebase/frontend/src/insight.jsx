@@ -1,21 +1,57 @@
 import React from "react";
 import { Icon } from "./icons.jsx";
 import { PdfCanvas, useElementWidth } from "./pdf.jsx";
-import { AnswerFields, GenerationBadge, pad } from "./prequiz.jsx";
+import { AnswerFields, pad } from "./prequiz.jsx";
 
 const STEPS = ["Pre-quiz", "Đối chiếu slide", "Giảng lại", "Case chuyển giao"];
 
-function stepIndex(answerState) {
-  if (answerState === "explain") return 2;
-  if (answerState === "transfer") return 3;
+function stepIndex(answerState, slideReviewed) {
   if (answerState === "result") return 4;
+  if (answerState === "transfer") return 3;
+  if (answerState === "explain") return slideReviewed ? 2 : 1;
   return 1;
 }
 
-function generationOf(insight) {
-  const g = insight?.generation;
-  if (!g) return null;
-  return { state: g.generated ? "live" : "reviewed", model: g.model, fallbackReason: g.fallbackReason };
+function ClaimList({ claims, pending }) {
+  if (!claims?.length) return null;
+  return (
+    <ul className="claim-list">
+      {claims.map(row => {
+        const state = pending || row.present == null ? "wait" : row.present ? "yes" : "no";
+        return (
+          <li key={row.label} className={state}>
+            <span>{state === "yes" ? <Icon name="check" size={13} strokeWidth={2.6} /> : state === "no" ? "!" : "·"}</span>
+            {row.label}
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
+
+function CoachNote({ coach, tone = "", onCite }) {
+  if (!coach?.message) return null;
+  return (
+    <div className={`coach-box ${tone}`}>
+      <b>Nhận xét</b>
+      <p>{coach.message}</p>
+      {coach.citations?.length > 0 && (
+        <p className="coach-cite">
+          Xem lại:{" "}
+          {coach.citations.map(item => (
+            <button
+              type="button"
+              key={item.sourceId}
+              className="cite-link"
+              onClick={() => item.page && onCite?.(item.page)}
+            >
+              {item.sourceId}{item.page ? ` · trang ${item.page}` : ""}
+            </button>
+          ))}
+        </p>
+      )}
+    </div>
+  );
 }
 
 export function TeacherNotes({ section, unlocked, onLoadInsight }) {
@@ -29,12 +65,12 @@ export function TeacherNotes({ section, unlocked, onLoadInsight }) {
         {section
           ? unlocked
             ? "Chưa có ghi chú của giảng viên cho slide này."
-            : `Làm pre-quiz Phần ${pad(section.number)} để AI Agent thay phần này bằng slide trọng tâm và lời giải thích.`
+            : `Làm pre-quiz Phần ${pad(section.number)} để mở slide trọng tâm và lời giải thích.`
           : "Chưa có ghi chú của giảng viên cho slide này."}
       </p>
       {section && unlocked && (
         <button type="button" className="btn-soft" onClick={onLoadInsight}>
-          <Icon name="sparkles" size={16} /> Xem kiến thức trọng tâm do Agent tổng hợp
+          <Icon name="sparkles" size={16} /> Xem kiến thức trọng tâm
         </button>
       )}
     </>
@@ -57,24 +93,23 @@ export function InsightPanel({ doc, section, flow, onKeyPage, onJump, onReload, 
   const insight = data?.insight;
   const activePage = flow.keyPage || insight?.focusPage || keySlides[0]?.page;
   const activeSlide = keySlides.find(slide => slide.page === activePage) || keySlides[0];
-  const current = stepIndex(flow.answerState);
+  const current = stepIndex(flow.answerState, flow.slideReviewed);
 
   return (
     <>
       <div className="insight-head">
         <span className="insight-avatar"><Icon name="sparkles" size={22} /></span>
         <div className="insight-title">
-          <p>Thay cho ghi chú của giảng viên · AI Agent tổng hợp từ slide</p>
+          <p>Thay cho ghi chú của giảng viên · tóm tắt từ slide trọng tâm</p>
           <h2>Kiến thức trọng tâm · Phần {pad(section.number)} {section.title}</h2>
         </div>
-        <GenerationBadge generation={generationOf(data)} liveLabel="Giải thích AI thật" reviewedLabel="Giải thích từ nguồn đã duyệt" />
       </div>
 
       {flow.insightState === "loading" && (
         <div className="insight-loading" role="status">
           <span className="mini-spinner" />
           <div>
-            <b>Explanation Agent đang đối chiếu slide trọng tâm</b>
+            <b>Đang đối chiếu slide trọng tâm</b>
             <p>Đọc chữ trên slide, nguồn đã duyệt và câu trả lời pre-quiz của bạn…</p>
           </div>
         </div>
@@ -137,29 +172,53 @@ export function InsightPanel({ doc, section, flow, onKeyPage, onJump, onReload, 
         <div className="reinforce-head">
           <h3>Củng cố hiểu biết</h3>
           <ol className="steps">
-            {STEPS.map((label, index) => (
-              <li key={label} className={index < current ? "done" : index === current ? "now" : ""}>
-                <span>{index < current ? <Icon name="check" size={13} strokeWidth={2.6} /> : index + 1}</span>
-                {label}
-              </li>
-            ))}
+            {STEPS.map((label, index) => {
+              const cls = index < current ? "done" : index === current ? "now" : "";
+              const canJump = index === 1 || (index === 2 && flow.slideReviewed) || (index === 3 && (flow.answerState === "transfer" || flow.answerState === "result"));
+              return (
+                <li key={label} className={cls}>
+                  <button
+                    type="button"
+                    className="step-hit"
+                    disabled={!canJump && index !== current}
+                    onClick={() => {
+                      if (index === 1) {
+                        const page = insight?.focusPage || keySlides[0]?.page;
+                        if (page) onJump(page);
+                      }
+                      if (index === 2 && flow.answerState === "explain") actions.markReviewed();
+                    }}
+                  >
+                    <span>{index < current ? <Icon name="check" size={13} strokeWidth={2.6} /> : index + 1}</span>
+                    {label}
+                  </button>
+                </li>
+              );
+            })}
           </ol>
         </div>
-        <Reinforcement section={section} flow={flow} actions={actions} />
+        <Reinforcement section={section} flow={flow} actions={actions} onJump={onJump} />
       </div>
     </>
   );
 }
 
-function Reinforcement({ section, flow, actions }) {
+function Reinforcement({ section, flow, actions, onJump }) {
   const { answerState, coach, busy } = flow;
+  const explainClaims = answerState === "explain" && flow.evaluation?.claims
+    ? flow.evaluation.claims
+    : flow.insight?.reinforce?.explain || [];
+  const transferClaims = answerState === "transfer" && flow.evaluation?.claims
+    ? flow.evaluation.claims
+    : flow.insight?.reinforce?.transfer || [];
+  const focusPage = flow.insight?.insight?.focusPage || flow.insight?.keySlides?.[0]?.page;
 
   if (!flow.session) {
     return (
       <div className="reinforce-body">
         <p className="muted">Phần này đã mở từ lần học trước nên không còn phiên pre-quiz đang chạy.</p>
         <button type="button" className="btn-soft" onClick={actions.restart} disabled={flow.phase === "loading"}>
-          <Icon name="rotate" size={16} /> {flow.phase === "loading" ? "Agent đang soạn câu hỏi…" : "Làm lại pre-quiz phần này"}
+          <Icon name="rotate" size={16} /> {flow.phase === "loading" ? "Đang soạn câu hỏi…" : "Làm lại pre-quiz phần này"}
         </button>
       </div>
     );
@@ -172,16 +231,19 @@ function Reinforcement({ section, flow, actions }) {
       <div className="reinforce-body">
         {coach?.message && (
           <div className={`coach-box ${coach.hint ? "hint" : "diagnosis"}`}>
-            <b>{coach.hint ? `Gợi ý ${coach.hint.level}/3` : "Chẩn đoán từ Agent"}</b>
+            <b>{coach.hint ? `Gợi ý ${coach.hint.level}/3` : "Giả định cần kiểm tra"}</b>
             <p>{coach.message}</p>
             {coach.citations?.length > 0 && (
               <p className="coach-cite">Nguồn: {coach.citations.map(c => c.sourceId).join(", ")}</p>
             )}
           </div>
         )}
+        {answerState !== "attempt" && (
+          <p className="muted">Đọc slide trọng tâm bên trên, rồi sửa câu trả lời. Phần này chỉ ra giả định, không chép đáp án giúp.</p>
+        )}
         {answerState !== "attempt" && nextHint <= 3 && (
           <button type="button" className="btn-soft" onClick={() => actions.hint(nextHint)} disabled={busy}>
-            <Icon name="lightbulb" size={16} /> Mở gợi ý {nextHint}
+            <Icon name="lightbulb" size={16} /> Mở gợi ý {nextHint}/3
           </button>
         )}
         <form
@@ -201,7 +263,33 @@ function Reinforcement({ section, flow, actions }) {
     );
   }
 
+  if (answerState === "explain" && !flow.slideReviewed) {
+    return (
+      <div className="reinforce-body">
+        <CoachNote coach={coach} tone="good" onCite={onJump} />
+        <div className="coach-box">
+          <b>Bước này: đối chiếu slide</b>
+          <p>
+            Mở slide có icon đích bên trên. Đọc excerpt đã duyệt. Việc này để bạn sửa giả định —
+            không phải để chép lại cho bước giảng.
+          </p>
+        </div>
+        <div className="reinforce-actions">
+          {focusPage && (
+            <button type="button" className="btn-soft" onClick={() => onJump(focusPage)}>
+              <Icon name="target" size={16} /> Mở slide trọng tâm (trang {focusPage})
+            </button>
+          )}
+          <button type="button" className="btn-primary" onClick={actions.markReviewed}>
+            Đã xem slide · bắt đầu giảng lại
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   if (answerState === "explain") {
+    const pending = !explainClaims.some(row => row.present != null);
     return (
       <form
         className="reinforce-body"
@@ -210,19 +298,31 @@ function Reinforcement({ section, flow, actions }) {
           actions.explain();
         }}
       >
-        {coach?.message && <div className="coach-box good"><b>Agent</b><p>{coach.message}</p></div>}
+        <CoachNote coach={coach} tone={coach?.status === "pass" ? "good" : coach?.status === "needs_revision" ? "warn" : "good"} onCite={onJump} />
+        <div>
+          <p className="retry-title">Nói lại 3 ý dưới đây bằng lời của bạn — diễn đạt khác vẫn được, không cần chép slide.</p>
+          <ClaimList claims={explainClaims} pending={pending} />
+        </div>
         <label className="field">
-          <span>Giảng lại ý chính bằng lời của bạn (không chép slide)</span>
-          <textarea rows={3} maxLength={500} required value={flow.explain} onChange={event => actions.setExplain(event.target.value)} placeholder="Ý chính của phần này là…" />
+          <span>Giảng lại ý chính</span>
+          <textarea
+            rows={4}
+            maxLength={800}
+            required
+            value={flow.explain}
+            onChange={event => actions.setExplain(event.target.value)}
+            placeholder="Ý chính là… khác với… vì… (một đoạn 3–5 câu là đủ)"
+          />
+          <small className="char-count">{flow.explain.length}/800</small>
         </label>
-        {flow.notice && <p className="form-note">{flow.notice}</p>}
         {flow.error && <p className="form-error" role="alert">{flow.error}</p>}
-        <button type="submit" className="btn-primary" disabled={busy}>{busy ? "Đang kiểm tra…" : "Gửi phần giảng lại"}</button>
+        <button type="submit" className="btn-primary" disabled={busy}>{busy ? "Đang đối chiếu…" : "Gửi phần giảng lại"}</button>
       </form>
     );
   }
 
   if (answerState === "transfer") {
+    const pending = !transferClaims.some(row => row.present != null);
     return (
       <form
         className="reinforce-body"
@@ -231,18 +331,23 @@ function Reinforcement({ section, flow, actions }) {
           actions.transfer();
         }}
       >
-        <div className="coach-box"><b>Case chuyển giao</b><p>{flow.item?.transfer?.prompt}</p></div>
+        <div className="coach-box">
+          <b>Case chuyển giao</b>
+          <p>{flow.item?.transfer?.prompt}</p>
+        </div>
+        <CoachNote coach={coach} tone={coach?.status === "needs_revision" ? "warn" : "good"} onCite={onJump} />
+        <p className="retry-title">Case này cần chạm các ý sau — viết hướng xử lý, không chép lý thuyết.</p>
+        <ClaimList claims={transferClaims} pending={pending} />
         <label className="field">
-          <span>Hướng xử lý</span>
-          <textarea rows={2} maxLength={500} required value={flow.transfer.answer} onChange={event => actions.setTransfer({ ...flow.transfer, answer: event.target.value })} />
+          <span>Bạn sẽ làm gì?</span>
+          <textarea rows={2} maxLength={800} required value={flow.transfer.answer} onChange={event => actions.setTransfer({ ...flow.transfer, answer: event.target.value })} placeholder="Mình chọn… vì task cần…" />
         </label>
         <label className="field">
-          <span>Vì sao / điều kiện áp dụng</span>
-          <textarea rows={2} maxLength={500} required value={flow.transfer.reasoning} onChange={event => actions.setTransfer({ ...flow.transfer, reasoning: event.target.value })} />
+          <span>Vì sao / khi nào cách đó đúng?</span>
+          <textarea rows={2} maxLength={800} required value={flow.transfer.reasoning} onChange={event => actions.setTransfer({ ...flow.transfer, reasoning: event.target.value })} placeholder="Chỉ thêm role/context khi…" />
         </label>
-        {flow.notice && <p className="form-note">{flow.notice}</p>}
         {flow.error && <p className="form-error" role="alert">{flow.error}</p>}
-        <button type="submit" className="btn-primary" disabled={busy}>{busy ? "Đang kiểm tra…" : "Gửi case chuyển giao"}</button>
+        <button type="submit" className="btn-primary" disabled={busy}>{busy ? "Đang đối chiếu…" : "Gửi case chuyển giao"}</button>
       </form>
     );
   }
