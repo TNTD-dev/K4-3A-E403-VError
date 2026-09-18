@@ -108,7 +108,17 @@ Các anchor p.7, p.8, p.10 và p.20 hỗ trợ trực tiếp concept specificity
 
 ## §3. Giải pháp tương tự đã nghiên cứu
 
-- Chưa thực hiện.
+### 1. Khanmigo (Khan Academy — AI Socratic Tutor)
+- **Flow giải quyết:** Học viên làm bài tập toán/khoa học; khi sai, Khanmigo kích hoạt hội thoại phụ bên cạnh, liên tục đặt câu hỏi gợi mở (Socratic questioning) để học viên từng bước tự tìm ra lỗi thay vì đưa đáp án.
+- **Một điều đáng học:** Tuân thủ triệt để nguyên tắc sư phạm *"Never give the answer directly"*; chia nhỏ câu hỏi thành các nấc nhận thức (scaffolding hints).
+- **Một điều đáng né:** Giao diện chat tự do (open conversational UI) dễ khiến người học phân tâm, mất nhiều thời gian gõ chat hoặc cố tình dùng prompt injection ép bot nhả đáp án; câu trả lời không gắn neo trực tiếp vào tài liệu gốc.
+- **Mình khác gì ở lát cắt này:** VError là checkpoint nổi trực tiếp trên trang slide bài học (in-situ checkpoint), không dùng khung chat lan man; chỉ tập trung chẩn đoán 1 misconception cốt lõi và mở khóa đúng trang PDF chứa bằng chứng (`D04-P07`, `D04-P10`) để người học tự đối chiếu và sửa lại.
+
+### 2. VLearn Default Tutor (Trợ lý học tập hiện tại của VLearn)
+- **Flow giải quyết:** Học viên tự đọc slide hoặc xem video thụ động; khi gặp chỗ không hiểu thì bấm mở popup chat ở góc phải màn hình để gõ câu hỏi cho AI trả lời.
+- **Một điều đáng học:** Giao diện quen thuộc, tích hợp sẵn ngay trong nền tảng học tập của học viên.
+- **Một điều đáng né:** Cơ chế thụ động (chờ học viên hỏi mới nói); khi trả lời thường đổ một khối văn bản template rất dài chứa đáp án trọn gói, dẫn đến học viên chỉ đọc lướt mà không đọng lại kiến thức; không tạo được mục tiêu chú ý trước khi học.
+- **Mình khác gì ở lát cắt này:** VError chủ động can thiệp bằng phương pháp *Productive Failure* — đưa pre-quiz tạo cược nhận thức *trước* khi vào bài giảng; slide bị làm mờ có chủ đích và chỉ mở nét sau khi học viên thử nghiệm tư duy và nhận chẩn đoán kèm nguồn trích dẫn.
 
 ## §4. Thiết kế
 
@@ -158,10 +168,10 @@ Các trạng thái này không nhận misconception label màu đỏ và không 
 
 | Thành viên | Mã học viên | Vai trò | Phần việc |
 |---|---|---|---|
-| Lê Nguyễn Quốc Bảo | 2A202603011 | Chưa phân công | Chưa phân công |
-| Hoàng Anh Tài | 2A202602612 | Chưa phân công | Chưa phân công |
-| Nguyễn Anh Dũng | 2A202602554 | Chưa phân công | Chưa phân công |
-| Trần Nguyễn Tiến Đức | 2A202602871 | Chưa phân công | Chưa phân công |
+| Trần Nguyễn Tiến Đức | 2A202602871 | Đội trưởng · Product Lead | Thiết kế Spec & JTBD, khai thác bằng chứng (Survey n=22, Mining 3.097 lượt), định nghĩa lát cắt bài toán, điều phối nộp Checkpoint CP1-CP5 và pitch demo CP6. |
+| Lê Nguyễn Quốc Bảo | 2A202603011 | AI / Prompt Engineer | Thiết kế kiến trúc Agents (Slide Agent, Question Generator, Orchestrator), tối ưu prompt chẩn đoán misconception, gợi ý hint 3 cấp độ có trích nguồn và xử lý fallback. |
+| Nguyễn Anh Dũng | 2A202602554 | Fullstack / Frontend Lead | Phát triển UI VLearn reader clone (React + Vite + pdf.js), cơ chế slide gating/blur khi chưa hoàn thành pre-quiz, tích hợp API FastAPI backend và quản lý session state. |
+| Hoàng Anh Tài | 2A202602612 | Eval / QA & Validation Lead | Xây dựng bộ Golden Set 20 case đa tầng phủ 4 lớp chỗ khó, viết script đánh giá tự động (`eval/`), thực hiện User Testing với 2 willing users và tổng hợp feedback log (`validation/`). |
 
 - Willing users: Trần Hữu Đức - 2A202602459; Bùi Gia Chính - 2A202602693.
 - Kế hoạch validation: Xem Canvas CP1 ô 04.
@@ -173,3 +183,4 @@ Các trạng thái này không nhận misconception label màu đỏ và không 
 | 16/09/2026 | Tạo khung spec cho VError theo Track D2 | Nhóm đã chọn Track D và đề D2. |
 | 16/09/2026 | Bổ sung evidence survey và mining, chọn lát cắt sửa misconception theo vòng làm thử - chẩn đoán - hint có nguồn - retry - explain-back | Evidence cho thấy pain là hypothesis có tín hiệu, cần validation để đo learning outcome. |
 | 16/09/2026 | Thay fixture tokenization bằng Prompt Engineering & Tool Calling Day 04 | Captain cung cấp PDF có các anchor p.7, p.8, p.10 và p.20 đủ hẹp để demo; transcript segment và video timestamp chưa có nên được ghi rõ là unavailable. |
+| 17/09/2026 | Bổ sung nhãn giải thích trạng thái slide mờ (Productive Failure mode), gắn số trang cụ thể vào nút điều hướng trọng tâm, và hiển thị khung Retry ngay dưới gợi ý | Đúc rút từ phản hồi của 2 willing users (Trần Hữu Đức & Bùi Gia Chính) trong `validation/user_testing_log.md` nhằm loại bỏ hiểu nhầm lag mạng và tối ưu luồng tự sửa lỗi. |
