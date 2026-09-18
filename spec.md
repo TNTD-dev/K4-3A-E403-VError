@@ -95,13 +95,15 @@ Mỗi người làm cùng một fixture Prompt Engineering với `attempt_1`, ch
 
 ## §2. Impact và quyết định chọn
 
-| Candidate D2 | Survey evidence | Mining evidence | Quyết định |
-|---|---|---|---|
-| Giải thích khái niệm theo mức kẹt | 18/22 tự báo hiểu không quá 60%; 19/22 tự báo nhớ và giải thích lại ở mức 1-3 | 819/2.555 lượt tự gõ có marker cần làm rõ khái niệm | Giữ làm fallback vì quá rộng |
-| Kiểm tra nhận định hoặc chuỗi suy luận | 16/22 đồng ý với giá trị của việc biết vì sao sai | 39/2.555 lượt tự gõ có marker kiểm tra nhận định | Dùng làm hard test bổ trợ |
-| Sửa một giả định rồi làm lại và explain-back | 12/22 có ý định dùng pre-test, nhưng chỉ 5/22 chắc chắn muốn | 304/2.555 reply có marker tutor sửa | Chọn vì sát D2 nhất |
+### Bảng so sánh Impact ≥3 ứng viên (Quy mô × Tần suất × Tổn thất):
 
-Không cộng số survey với số mining.
+| Ứng viên D2 | Quy mô (từ Evidence) | Tần suất | Mỗi lần tốn gì (Cost of error) | Khả thi build | Quyết định & Lý do bằng số |
+|---|---|---|---|:---:|---|
+| **1. Giải thích khái niệm theo mức kẹt** | 18/22 survey (81.8%) chỉ hiểu $\le 60\%$; 819/2.555 lượt tự gõ kẹt khái niệm | 15 buổi/khoá (~350 học viên) | Mất 20-30 phút đọc lại slide lan man, giảm niềm tin vào việc tự học | Thấp (quá rộng) | **LOẠI** (giữ làm fallback) — Không khả thi kiểm soát nguồn và câu hỏi cho toàn bộ 15 buổi trong 48h. |
+| **2. Kiểm tra chuỗi suy luận/nhận định** | 16/22 survey (72.7%) muốn biết lý do sai; 39/2.555 lượt chatlog kiểm tra suy luận | 2-3 lần/tuần khi làm lab | 15-20 phút chat qua lại với AI mà không nhận diện được điểm mù tư duy cốt lõi | Trung bình | **LOẠI** (dùng làm hard test bổ trợ) — Quy mô hẹp (chỉ 39 lượt chatlog), khó đóng khung đánh giá chuẩn hoá. |
+| **3. Sửa giả định sai qua Pre-quiz rồi làm lại & explain-back (VError)** | 12/22 survey sẵn sàng dùng pre-test; 304/2.555 lượt tutor phải sửa trực tiếp | Đầu mỗi section bài học mới | Mất 1-2 điểm quiz vì tự tin ảo khi đọc lướt; tốn 25 phút đọc lại toàn bộ deck 43 trang | **Rất cao** (khả thi 48h) | **CHỌN** — Sát nhất với triết lý Productive Failure của Track D2; đóng gói gọn gàng trong 4 anchor slide Day 04 (`D04-P07`, `P08`, `P10`, `P20`). |
+
+Không cộng gộp số survey với số mining vì hai tập mẫu độc lập.
 Prompt Engineering được chọn làm fixture hẹp vì material Day 04 do captain cung cấp có một claim rõ để kiểm tra và các anchor đủ gần nhau cho demo 5 phút.
 Các anchor p.7, p.8, p.10 và p.20 hỗ trợ trực tiếp concept specificity, Task + Format, chi phí hoặc nhiễu của token thừa, và context cần thiết.
 Đây là bounded content evidence cho mockup, không chứng minh người học nào đã mắc misconception này.
@@ -134,7 +136,28 @@ Các anchor p.7, p.8, p.10 và p.20 hỗ trợ trực tiếp concept specificity
 | G10 - Thu hẹp phạm vi khi nghi ngờ | Input mơ hồ hoặc không khớp misconception sẽ dẫn đến câu hỏi làm rõ, không kết luận lỗi. |
 | G9 - Sửa dễ dàng | Học viên có ô trả lời lại và explain-back ngay sau gợi ý. |
 
-## §5. Kiểu lỗi - 4 lớp chỗ khó và kịch bản
+## §5. Kiểu lỗi - 4 lớp chỗ khó và kịch bản rủi ro
+
+### 1. Phân loại 4 lớp chỗ khó theo Taxonomy PAIR/HAX:
+- **① Nguồn sự thật (Source of Truth):** Chỗ nào AI dễ bịa? Nguy cơ hallucinate dẫn nguồn ngoài slide hoặc bịa số trang. *Cách xử lý:* Ràng buộc chặt chẽ trong mã nguồn, chỉ cho phép cite 4 trang slide đã duyệt (`D04-P07`, `D04-P08`, `D04-P10`, `D04-P20`); nếu vượt nguồn, AI kích hoạt trạng thái unavailable/abstain.
+- **② Mơ hồ / Thiếu thông tin (Ambiguity & Missing Information):** Input của học viên cụt ngủn ("không biết", "dài hơn thì tốt") hoặc thiếu reasoning. *Cách xử lý:* Kích hoạt HAX G10 (Thu hẹp phạm vi khi nghi ngờ), chuyển sang route `clarify / no-basis`, tuyệt đối không gán nhãn misconception đỏ bừa bãi.
+- **③ Ngoài phạm vi / Thẩm quyền (Out of Scope & Boundary):** Học viên yêu cầu viết code, hỏi giá API, hoặc đòi "cho đáp án luôn". *Cách xử lý:* Chuyển sang route `out-of-scope` (HAX G1), giữ nguyên tắc sư phạm không lộ đáp án (*Never reveal answer*), hướng dẫn quay lại checkpoint.
+- **④ Đặc thù Domain Prompting (Domain Specificity):** Học viên đoán đúng đáp án nhưng lý do sai, hoặc nhầm lẫn giữa "context cần thiết" và "nhồi context thừa". *Cách xử lý:* Kích hoạt route `low-confidence`, bắt buộc hoàn thành explain-back và transfer check trước khi xác nhận đạt.
+
+### 2. Bảng 8 Kịch bản rủi ro cụ thể phủ đủ 4 lớp chỗ khó:
+
+| Mã | Tình huống cụ thể | Lớp chỗ khó | Hành vi mong muốn (Nói gì, hiện gì, cho user làm gì tiếp) | Nguyên tắc HAX/PAIR |
+|:---:|---|:---:|---|:---:|
+| **K01** | Học viên hỏi về công thức tính token embedding không có trong slide Day 04 | ① Nguồn sự thật | AI nêu rõ tài liệu Day 04 không bao gồm công thức này, không suy đoán; dẫn người học về Slide p.7 Task & Format. | HAX G2 (Làm rõ mức độ tin cậy) |
+| **K02** | Học viên khẳng định một số liệu benchmark latency ngoài học liệu | ① Nguồn sự thật | AI từ chối trích dẫn số liệu ngoài nguồn; hiển thị trạng thái `source_unavailable`, yêu cầu dựa vào deck Day 04. | HAX G11 (Giải thích căn cứ) |
+| **K03** | Học viên nhập câu trả lời cụt cộc: *"Không biết, chưa học"* | ② Mơ hồ | AI không phán đoán lỗi, chuyển sang trạng thái `no-basis / clarify`; hiển thị gợi ý cấp 1 hướng dẫn đọc slide mở đầu trang 6. | HAX G10 (Thu hẹp khi nghi ngờ) |
+| **K04** | Học viên chọn đáp án nhưng bỏ trống hoàn toàn phần giải thích (reasoning) | ② Mơ hồ | AI hiển thị thông báo yêu cầu bổ sung căn cứ suy luận trước khi chẩn đoán; giữ nguyên form để học viên bổ sung. | PAIR Feedback & Control |
+| **K05** | Học viên yêu cầu: *"Viết code Python gọi OpenAI API cho bài này"* | ③ Ngoài phạm vi | AI thông báo tính năng chỉ hỗ trợ tư duy thiết kế prompt trước bài học; điều hướng người học quay lại câu hỏi pre-quiz. | HAX G1 (Làm rõ phạm vi) |
+| **K06** | Học viên nhắn: *"Khó quá, cho đáp án luôn đi"* | ③ Ngoài phạm vi | AI từ chối cung cấp đáp án trực tiếp; đưa ra gợi ý gợi mở (Socratic hint cấp 1) và nút mở tài liệu tham khảo tương ứng. | PAIR Errors & Graceful Failure |
+| **K07** | Học viên cho rằng: *"Prompt càng thêm Role siêu nhân ấn tượng thì model càng thông minh"* | ④ Đặc thù Domain | AI chẩn đoán đúng `M_CLEVER_ROLE_ALWAYS_BETTER`, trích dẫn Slide p.7 & p.8 về tính cụ thể (specificity) thay vì văn phong màu mè. | HAX G9 (Sửa dễ dàng qua Retry) |
+| **K08** | Học viên chọn đúng đáp án nhưng đánh dấu độ tự tin *"Chưa chắc / Đoán bừa"* | ④ Đặc thù Domain | AI ghi nhận đúng hướng nhưng chuyển sang route `low-confidence`; bắt buộc học viên làm câu hỏi chuyển giao (transfer) để chứng minh hiểu thật. | PAIR Mental Models |
+
+### 3. Bảng Misconceptions cốt lõi:
 
 | Mã | Giả định cần kiểm tra | Nguồn hỗ trợ | Hành vi UI/API |
 |---|---|---|---|
