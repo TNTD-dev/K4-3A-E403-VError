@@ -36,13 +36,9 @@ No TypeScript Fastify runtime, no three independent agents, no RAG, no teacher d
 
 ## Deck
 
-Copy of the captain deck:
+Copy of the Day 04 course deck:
 
 `frontend/public/prompt-engineering-tool-calling.pdf`
-
-Source used for this worktree:
-
-`/home/duckk/firstmate/data/verror-react-python/Prompt Engineering & Tool Calling.pdf`
 
 ## Run locally
 

@@ -24,7 +24,7 @@ Loại: [ ] Tối ưu tính năng có sẵn  [x] Tính năng mới
 
 - 16/22 đồng ý ở mức 4-5 rằng biết chính xác vì sao sai giúp hiểu và nhớ tốt hơn.
 - 12/22 trả lời `Có lẽ muốn` hoặc `Chắc chắn muốn` dùng 3-5 câu hỏi không tính điểm, nhưng chỉ 5/22 `Chắc chắn muốn`.
-- Captain xác nhận cả 22 người trả lời đều ngoài nhóm, nên khảo sát đáp ứng quy mô tối thiểu của chuẩn A.
+- Nhóm đã đối chiếu danh sách và xác nhận cả 22 người trả lời đều là học viên ngoài nhóm, đáp ứng đầy đủ quy mô tối thiểu của Chuẩn A.
 - Survey vẫn là self-report và câu hỏi về pre-test là một tình huống giả định.
 
 **Mining evidence, mẫu số tách biệt:**
@@ -52,7 +52,7 @@ Chưa có quan sát workflow sau lỗi, retry, explain-back, thời gian bị k�
 
 **Lát cắt một câu:** Một học viên làm một checkpoint Prompt Engineering ngắn trước khi xem slide hoặc video Day 04; nếu sai, VError chỉ ra giả định “prompt càng dài hoặc càng nhiều thành phần thì luôn tốt hơn”, đưa gợi ý có trích nguồn, yêu cầu làm lại và explain-back; nếu đúng, VError hỏi ngược một tình huống viết prompt cho task mới thay vì chỉ chúc mừng.
 
-**Nguồn nội dung:** `Prompt Engineering & Tool Calling.pdf` do captain cung cấp, giới hạn ở PDF p.7, p.8, p.10 và p.20.
+**Nguồn nội dung:** Slide bài giảng chính thức `Prompt Engineering & Tool Calling.pdf` (Day 04), giới hạn ở PDF p.7, p.8, p.10 và p.20.
 Transcript segment và video timestamp chưa có trong material được cung cấp, nên UI/API hiển thị rõ trạng thái unavailable thay vì bịa vị trí.
 
 **Automation:** Conditional augment.
@@ -104,7 +104,7 @@ Mỗi người làm cùng một fixture Prompt Engineering với `attempt_1`, ch
 | **3. Sửa giả định sai qua Pre-quiz rồi làm lại & explain-back (VError)** | 12/22 survey sẵn sàng dùng pre-test; 304/2.555 lượt tutor phải sửa trực tiếp | Đầu mỗi section bài học mới | Mất 1-2 điểm quiz vì tự tin ảo khi đọc lướt; tốn 25 phút đọc lại toàn bộ deck 43 trang | **Rất cao** (khả thi 48h) | **CHỌN** — Sát nhất với triết lý Productive Failure của Track D2; đóng gói gọn gàng trong 4 anchor slide Day 04 (`D04-P07`, `P08`, `P10`, `P20`). |
 
 Không cộng gộp số survey với số mining vì hai tập mẫu độc lập.
-Prompt Engineering được chọn làm fixture hẹp vì material Day 04 do captain cung cấp có một claim rõ để kiểm tra và các anchor đủ gần nhau cho demo 5 phút.
+Prompt Engineering được chọn làm fixture hẹp vì slide bài giảng Day 04 có luận điểm rõ ràng để kiểm tra và các anchor trang slide đủ gần nhau cho buổi demo 5 phút.
 Các anchor p.7, p.8, p.10 và p.20 hỗ trợ trực tiếp concept specificity, Task + Format, chi phí hoặc nhiễu của token thừa, và context cần thiết.
 Đây là bounded content evidence cho mockup, không chứng minh người học nào đã mắc misconception này.
 
@@ -205,6 +205,6 @@ Các trạng thái này không nhận misconception label màu đỏ và không 
 |---|---|---|
 | 16/09/2026 | Tạo khung spec cho VError theo Track D2 | Nhóm đã chọn Track D và đề D2. |
 | 16/09/2026 | Bổ sung evidence survey và mining, chọn lát cắt sửa misconception theo vòng làm thử - chẩn đoán - hint có nguồn - retry - explain-back | Evidence cho thấy pain là hypothesis có tín hiệu, cần validation để đo learning outcome. |
-| 16/09/2026 | Thay fixture tokenization bằng Prompt Engineering & Tool Calling Day 04 | Captain cung cấp PDF có các anchor p.7, p.8, p.10 và p.20 đủ hẹp để demo; transcript segment và video timestamp chưa có nên được ghi rõ là unavailable. |
+| 16/09/2026 | Thay fixture tokenization bằng Prompt Engineering & Tool Calling Day 04 | Chọn slide bài giảng Day 04 có các anchor p.7, p.8, p.10 và p.20 đủ hẹp để demo; transcript segment và video timestamp chưa có nên được ghi rõ là unavailable. |
 | 17/09/2026 | Bổ sung nhãn giải thích trạng thái slide mờ (Productive Failure mode), gắn số trang cụ thể vào nút điều hướng trọng tâm, và hiển thị khung Retry ngay dưới gợi ý | Đúc rút từ phản hồi của 2 willing users (Trần Hữu Đức & Bùi Gia Chính) trong `validation/user_testing_log.md` nhằm loại bỏ hiểu nhầm lag mạng và tối ưu luồng tự sửa lỗi. |
 | 18/09/2026 | Đưa vào backlog thiết kế nút 'Yêu cầu trợ giúp từ Giảng viên thật / TA' sau 3 lần retry thất bại | Đúc rút từ User Testing (Slide 05) khi ghi nhận một số tình huống người học nản chí nếu không hiểu ý gợi ý của AI. |
