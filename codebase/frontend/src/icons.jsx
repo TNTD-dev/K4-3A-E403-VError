@@ -64,12 +64,14 @@ export function Icon({ name, size = 20, strokeWidth = 1.8, className = "", ...re
   );
 }
 
-export function Logo({ size = 44 }) {
+export function Logo({ height = 40 }) {
   return (
-    <svg className="logo-mark" width={size} height={size} viewBox="0 0 48 48" aria-hidden="true">
-      <path d="M4 7h11.5L24 24.5 32.5 7H44L28.6 40.5h-9.2z" fill="#0b4f8d" />
-      <path d="M4 7h11.5l6 12.3-5.4 7.4z" fill="#d8202a" />
-      <path d="M24 24.5 32.5 7H44L28.6 40.5z" fill="#0a3f73" opacity=".55" />
-    </svg>
+    <img
+      className="logo-mark"
+      src="/vlearn-logo.png"
+      alt="VLearn"
+      height={height}
+      draggable="false"
+    />
   );
 }

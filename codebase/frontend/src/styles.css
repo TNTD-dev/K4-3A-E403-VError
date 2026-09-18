@@ -227,10 +227,8 @@ h1, h2, h3, h4, p { margin: 0; }
   border-bottom: 1px solid var(--line);
   background: #fff;
 }
-.home-brand { display: flex; align-items: center; gap: 12px; text-decoration: none; }
-.brand-divider { width: 1px; height: 34px; background: #d7dde2; }
-.brand-word { color: var(--blue); font-size: 30px; font-weight: 700; letter-spacing: -0.03em; }
-.brand-word b { color: var(--red); font-weight: 700; }
+.home-brand { display: flex; align-items: center; text-decoration: none; }
+.logo-mark { display: block; height: 42px; width: auto; }
 
 .home-links { display: flex; align-items: stretch; gap: 8px; margin-left: 18px; }
 .home-links > a,
@@ -871,8 +869,7 @@ h1, h2, h3, h4, p { margin: 0; }
 
 @media (max-width: 720px) {
   .home-nav { gap: 12px; height: 64px; padding: 0 16px; }
-  .brand-word { font-size: 24px; }
-  .logo-mark { width: 36px; height: 36px; }
+  .logo-mark { height: 32px; width: auto; }
   .home-tools { gap: 10px; padding-left: 0; border-left: 0; }
   .lang-toggle,
   .home-tools > button:first-of-type { display: none; }

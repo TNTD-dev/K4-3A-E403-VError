@@ -18,9 +18,7 @@ export function TopNav({ onOpenDay }) {
   return (
     <header className="home-nav">
       <a className="home-brand" href="./" aria-label="VLearn trang chủ">
-        <Logo />
-        <span className="brand-divider" aria-hidden="true" />
-        <span className="brand-word"><b>V</b>Learn</span>
+        <Logo height={42} />
       </a>
       <nav className="home-links" aria-label="Điều hướng chính">
         <a className="active" href="./" aria-current="page"><Icon name="home" size={24} />Trang chủ</a>
