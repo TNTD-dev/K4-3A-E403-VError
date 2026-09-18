@@ -209,13 +209,17 @@ class Orchestrator:
     def submit_attempt(self, session_id: str, body: AttemptBody) -> dict[str, Any]:
         row = self.require(session_id)
         if body.stateVersion != row["state_version"]:
-            raise DomainError("STATE_VERSION_CONFLICT", 409)
+            raise DomainError("STATE_VERSION_CONFLICT", 409, "Phiên đã đổi, hãy gửi lại.")
+        # After "chưa đủ căn cứ", session sits in source_review/clarify. A rewritten
+        # answer from the panel is a retry — reopen that state instead of 409.
+        if row["state"] in {"source_review", "clarify"} and body.kind == "retry":
+            row = self.transition(row, "retry")
         if row["state"] not in {"attempt_1_open", "retry", "diagnosis"}:
-            raise DomainError("INVALID_STATE", 409)
+            raise DomainError("INVALID_STATE", 409, "Bước này chưa nhận câu trả lời mới. Đọc slide rồi gửi lại từ form sửa.")
         if body.kind == "attempt_1" and row["state"] != "attempt_1_open":
-            raise DomainError("INVALID_ATTEMPT_KIND", 409)
+            raise DomainError("INVALID_ATTEMPT_KIND", 409, "Lần gửi này phải là câu trả lời đã sửa.")
         if body.kind == "retry" and row["state"] not in {"retry", "diagnosis"}:
-            raise DomainError("INVALID_ATTEMPT_KIND", 409)
+            raise DomainError("INVALID_ATTEMPT_KIND", 409, "Hãy dùng form sửa câu trả lời, không gửi pre-quiz lần đầu.")
         attempt_no = len(self.store.attempts(session_id)) + 1
         if attempt_no > 3:
             raise DomainError("ATTEMPT_LIMIT", 409)
@@ -412,7 +416,11 @@ class Orchestrator:
         latest = attempts[-1] if attempts else None
         code = latest["error_code"] if latest else None
         if not code:
-            raise DomainError("NO_GROUNDED_DIAGNOSIS", 409)
+            raise DomainError(
+                "NO_GROUNDED_DIAGNOSIS",
+                409,
+                "Chưa chẩn đoán được giả định nên chưa mở được gợi ý. Hãy đọc slide trọng tâm, viết rõ hơn câu trả lời, rồi gửi lại.",
+            )
         expected = row["hint_level"] + 1
         if body.level != expected:
             raise DomainError("HINT_SEQUENCE_INVALID", 409)

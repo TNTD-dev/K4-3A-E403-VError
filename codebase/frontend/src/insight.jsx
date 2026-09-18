@@ -224,14 +224,22 @@ function Reinforcement({ section, flow, actions, onJump }) {
     );
   }
 
-  if (answerState === "attempt" || answerState === "diagnosis" || answerState === "retry") {
+  if (answerState === "attempt" || answerState === "diagnosis" || answerState === "retry" || answerState === "review") {
     const nextHint = (coach?.hint?.level || 0) + 1;
     const kind = answerState === "attempt" ? "attempt_1" : "retry";
+    const hasDiagnosis = Boolean(flow.evaluation?.errorCode);
+    const canHint = hasDiagnosis && answerState !== "attempt" && nextHint <= 3;
+    const boxClass = coach?.hint ? "hint" : answerState === "review" || !hasDiagnosis ? "warn" : "diagnosis";
+    const boxTitle = coach?.hint
+      ? `Gợi ý ${coach.hint.level}/3`
+      : hasDiagnosis
+        ? "Giả định cần kiểm tra"
+        : "Chưa đủ căn cứ để kết luận";
     return (
       <div className="reinforce-body">
         {coach?.message && (
-          <div className={`coach-box ${coach.hint ? "hint" : "diagnosis"}`}>
-            <b>{coach.hint ? `Gợi ý ${coach.hint.level}/3` : "Giả định cần kiểm tra"}</b>
+          <div className={`coach-box ${boxClass}`}>
+            <b>{boxTitle}</b>
             <p>{coach.message}</p>
             {coach.citations?.length > 0 && (
               <p className="coach-cite">Nguồn: {coach.citations.map(c => c.sourceId).join(", ")}</p>
@@ -239,17 +247,23 @@ function Reinforcement({ section, flow, actions, onJump }) {
           </div>
         )}
         {answerState !== "attempt" && (
-          <p className="muted">Đọc slide trọng tâm bên trên, rồi sửa câu trả lời. Phần này chỉ ra giả định, không chép đáp án giúp.</p>
+          <p className="muted">
+            {hasDiagnosis
+              ? "Đọc slide trọng tâm bên trên, rồi sửa câu trả lời. Phần này chỉ ra giả định, không chép đáp án giúp."
+              : "Đọc slide trọng tâm bên trên, rồi viết rõ đồng ý/không và vì sao. Có căn cứ rồi mới có gợi ý."}
+          </p>
         )}
-        {answerState !== "attempt" && nextHint <= 3 && (
+        {canHint && (
           <button type="button" className="btn-soft" onClick={() => actions.hint(nextHint)} disabled={busy}>
             <Icon name="lightbulb" size={16} /> Mở gợi ý {nextHint}/3
           </button>
         )}
         <form
           className="retry-form"
+          noValidate
           onSubmit={event => {
             event.preventDefault();
+            if (!flow.retryDraft.answer.trim() || !flow.retryDraft.explanation.trim()) return;
             actions.submit(kind);
           }}
         >
@@ -257,7 +271,13 @@ function Reinforcement({ section, flow, actions, onJump }) {
           <p className="retry-statement">{flow.item?.statement}</p>
           <AnswerFields draft={flow.retryDraft} onChange={actions.retryDraft} idPrefix={`retry-${section.sectionId}`} compact />
           {flow.error && <p className="form-error" role="alert">{flow.error}</p>}
-          <button type="submit" className="btn-primary" disabled={busy}>{busy ? "Đang chẩn đoán…" : "Gửi câu trả lời đã sửa"}</button>
+          <button
+            type="submit"
+            className="btn-primary"
+            disabled={busy || !flow.retryDraft.answer.trim() || !flow.retryDraft.explanation.trim()}
+          >
+            {busy ? "Đang chẩn đoán…" : "Gửi câu trả lời đã sửa"}
+          </button>
         </form>
       </div>
     );

@@ -36,8 +36,8 @@ const STATE_MAP = {
   retry: "retry",
   explain_back: "explain",
   transfer_check: "transfer",
-  source_review: "safe",
-  clarify: "safe",
+  source_review: "review",
+  clarify: "review",
   out_of_scope: "scope",
   completed: "result",
 };
@@ -328,7 +328,14 @@ export default function ReaderPage({ day, initialPage, onBack, onOpenDay }) {
     );
 
   const resumeSession = id =>
-    sessionCall(id, "resume", {}, result => ({ answerState: result.next.state === "attempt_1_open" ? "attempt" : "retry" }));
+    sessionCall(id, "resume", {}, (result, previous) => ({
+      answerState:
+        result.next.state === "attempt_1_open"
+          ? "attempt"
+          : previous.evaluation?.errorCode
+            ? "retry"
+            : "review",
+    }));
 
   // ------------------------------------------------------------------ navigation
   const goTo = useCallback(

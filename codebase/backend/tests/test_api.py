@@ -212,6 +212,41 @@ def test_legacy_item_alias_still_opens_section_one():
     assert item["item"]["sectionId"] == "prompt-fundamentals"
 
 
+def test_retry_from_source_review_does_not_return_invalid_state():
+    c = client()
+    session = c.post("/api/v1/sessions", json={"sectionId": "prompt-fundamentals"}).json()
+    sid = session["sessionId"]
+    first = c.post(
+        f"/api/v1/sessions/{sid}/attempts",
+        headers={"Idempotency-Key": "unknown-001"},
+        json={
+            "stateVersion": 1,
+            "kind": "attempt_1",
+            "answer": {"text": "ok", "explanation": "tạm vậy"},
+            "basis": "Suy luận",
+        },
+    )
+    body = first.json()
+    assert first.status_code == 200
+    assert body["next"]["state"] == "source_review"
+    retry = c.post(
+        f"/api/v1/sessions/{sid}/attempts",
+        headers={"Idempotency-Key": "unknown-002"},
+        json={
+            "stateVersion": body["stateVersion"],
+            "kind": "retry",
+            "answer": {"text": "đúng", "explanation": "thì do prompt dài hơn thì tốt hơn"},
+            "basis": "Suy luận",
+        },
+    )
+    assert retry.status_code == 200, retry.text
+    payload = retry.json()
+    assert "error" not in payload
+    assert payload["next"]["state"] == "retry"
+    assert payload["evaluation"]["status"] == "incorrect"
+    assert payload["evaluation"]["errorCode"] == "M_PROMPT_LONGER_BETTER"
+
+
 def test_stale_state_and_idempotency_are_rejected():
     c = client()
     session = c.post("/api/v1/sessions", json={"sectionId": "prompt-fundamentals"}).json()
