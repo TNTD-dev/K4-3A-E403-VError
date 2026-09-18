@@ -2,20 +2,20 @@
 
 - **Họ và Tên:** Hoàng Anh Tài
 - **Mã Học Viên:** 2A202602612
-- **Vai trò:** Eval / QA & Validation Lead
+- **Vai trò:** Eval, Validation & Slide Lead
 - **Dự án:** VError (Track D2 — Học từ lỗi trước / Productive Failure)
 
 ---
 
 ## 1. Phần việc chính đảm nhiệm trong dự án
-- Thiết kế và chuẩn hóa bộ dữ liệu kiểm thử vàng (**Golden Set**) gồm 20 cases (`eval/golden_set.json`), đảm bảo độ phủ 4 lớp chỗ khó (nguồn sự thật, mơ hồ, ngoài phạm vi, đặc thù domain Prompting).
-- Viết kịch bản đánh giá tự động (`eval/run_eval.py`, `eval/score_results.py`) và thực thi 2 đợt đo lường chính thức, phân tích nguyên nhân các trường hợp chưa đạt (`eval/error_analysis.md`).
-- Tổ chức 2 phiên thử nghiệm thực tế với 2 willing users ngoài nhóm (Trần Hữu Đức và Bùi Gia Chính), ghi lại nhật ký 5 nhịp và tổng hợp các đề xuất cải tiến vào `validation/user_testing_log.md`.
+- Đồng thực hiện khảo sát người học và trực tiếp chủ trì 2 phiên thử nghiệm người dùng thực tế (**User Testing**) với 2 willing users ngoài nhóm (`validation/user_testing_log.md`), ghi nhận hành vi quan sát và quote nguyên văn.
+- Cùng bạn Nguyễn Anh Dũng xây dựng bộ Golden Set 20 case (`eval/golden_set.json`), viết script đánh giá tự động và phân tích nguyên nhân lỗi sai (`eval/error_analysis.md`).
+- Chịu trách nhiệm thiết kế toàn bộ bộ slide thuyết trình **`demo-slides.pdf`** (đúng chuẩn 6 slide theo luật *"Không có bằng chứng thì không có slide"* của Guide §5.1) phục vụ nộp CP5 và thuyết trình chung kết CP6.
 
 ## 2. AI đã hỗ trợ như thế nào trong quá trình làm việc
-- Sử dụng AI để hỗ trợ sinh các câu trả lời giả định đa dạng từ góc nhìn học viên (paraphrase inputs), giúp bộ test không bị đơn điệu.
-- Hỗ trợ viết script tính toán chỉ số thống kê và đối chiếu tự động kết quả thực chạy với Quality Bar đã cam kết.
+- AI hỗ trợ tổng hợp nhanh các biểu đồ số liệu đánh giá từ file kết quả CSV của đợt chạy eval để đưa vào Slide 4 (Kết quả đo).
+- Hỗ trợ xây dựng các kịch bản phỏng vấn bán cấu trúc theo chuẩn Mom Test và script user testing 5 nhịp của Guide §4.2.
 
 ## 3. Bài học kinh nghiệm từ một case fail của chính nhóm
-- **Case fail:** Trong bộ Golden Set ban đầu, có 2 case thuộc nhóm "Mơ hồ" nhưng định nghĩa đánh giá chiều *Relevance* bị viết chung chung, dẫn đến hai thành viên trong nhóm tự chấm độc lập ra hai kết quả khác nhau (lệch inter-rater agreement).
-- **Bài học rút ra:** Đánh giá AI không được dựa trên cảm tính ("vibe check"). Nhóm đã phải viết lại tiêu chí đánh giá thành dạng nhị phân có thể kiểm chứng được độc lập (người ngoài nhóm đọc vào cũng cho ra cùng kết quả đạt/không đạt), tuân thủ đúng bài giảng AI Evaluation của khóa học.
+- **Case fail:** Trong phiên test người dùng với bạn Trần Hữu Đức, bạn ấy phản ánh rằng sau khi nhận chẩn đoán, nút bấm chuyển tiếp chưa ghi rõ sẽ dẫn tới slide nào khiến bạn ấy tưởng là chuyển sang bài học khác.
+- **Bài học rút ra:** Cần gắn rõ ngữ cảnh hành động với phản hồi của AI (HAX G11). Tôi đã trao đổi với bạn Đức làm UI để cập nhật lại nhãn nút bấm thành *"Đi đến Slide 10 trọng tâm →"*, giúp người học biết chính xác mình đang được dẫn về đâu để đối chiếu kiến thức.

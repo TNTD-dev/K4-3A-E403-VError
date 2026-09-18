@@ -166,12 +166,12 @@ Các trạng thái này không nhận misconception label màu đỏ và không 
 
 ## §8. Phân công và kế hoạch
 
-| Thành viên | Mã học viên | Vai trò | Phần việc |
+| Họ và Tên | Mã Học Viên | Vai trò chính | Phần việc đảm nhiệm trong dự án |
 |---|---|---|---|
-| Trần Nguyễn Tiến Đức | 2A202602871 | Đội trưởng · Product Lead | Thiết kế Spec & JTBD, khai thác bằng chứng (Survey n=22, Mining 3.097 lượt), định nghĩa lát cắt bài toán, điều phối nộp Checkpoint CP1-CP5 và pitch demo CP6. |
-| Lê Nguyễn Quốc Bảo | 2A202603011 | AI / Prompt Engineer | Thiết kế kiến trúc Agents (Slide Agent, Question Generator, Orchestrator), tối ưu prompt chẩn đoán misconception, gợi ý hint 3 cấp độ có trích nguồn và xử lý fallback. |
-| Nguyễn Anh Dũng | 2A202602554 | Fullstack / Frontend Lead | Phát triển UI VLearn reader clone (React + Vite + pdf.js), cơ chế slide gating/blur khi chưa hoàn thành pre-quiz, tích hợp API FastAPI backend và quản lý session state. |
-| Hoàng Anh Tài | 2A202602612 | Eval / QA & Validation Lead | Xây dựng bộ Golden Set 20 case đa tầng phủ 4 lớp chỗ khó, viết script đánh giá tự động (`eval/`), thực hiện User Testing với 2 willing users và tổng hợp feedback log (`validation/`). |
+| Trần Nguyễn Tiến Đức | 2A202602871 | Đội trưởng · Frontend / UI Lead | Phát triển toàn bộ giao diện VLearn reader clone (React + Vite + pdf.js), cơ chế Productive Failure Gating (làm mờ slide veil khi chưa giải câu hỏi), kết nối API backend, điều phối các mốc Checkpoint CP1-CP5 và phụ trách live demo/pitch CP6. |
+| Lê Nguyễn Quốc Bảo | 2A202603011 | AI / Prompt Engineer | Thiết kế kiến trúc Agents (Slide Agent, Question Generator, Orchestrator), tối ưu prompt chẩn đoán misconception, gợi ý hint 3 cấp độ có trích nguồn slide và xử lý fallback. |
+| Nguyễn Anh Dũng | 2A202602554 | Research & Eval Lead | Thực hiện khảo sát nhu cầu người học (Survey n=22), khai phá dữ liệu chatlog K4 (3.097 lượt), cùng xây dựng bộ kiểm thử Golden Set (20 case phủ 4 lớp chỗ khó) và chạy đo lường đánh giá chất lượng mô hình (`eval/`). |
+| Hoàng Anh Tài | 2A202602612 | Eval, Validation & Slide Lead | Đồng thực hiện khảo sát & User Testing (2 willing users trong `validation/`), cùng xây dựng Golden Set và script eval (`eval/`), thiết kế toàn bộ slide thuyết trình (`demo-slides.pdf`) cho CP5 và CP6. |
 
 - Willing users: Trần Hữu Đức - 2A202602459; Bùi Gia Chính - 2A202602693.
 - Kế hoạch validation: Xem Canvas CP1 ô 04.
