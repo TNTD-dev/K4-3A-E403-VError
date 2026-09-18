@@ -42,10 +42,24 @@ export function TopNav({ onOpenDay }) {
 export default function HomePage({ onOpenDay }) {
   const [progress, setProgress] = useState(null);
   const [tab, setTab] = useState("k4");
+  const [resetState, setResetState] = useState("idle");
 
   useEffect(() => {
     request("/api/v1/sections").then(setProgress).catch(() => setProgress(null));
   }, []);
+
+  async function resetDemo() {
+    if (resetState === "busy") return;
+    setResetState("busy");
+    try {
+      const toc = await request("/api/v1/progress/reset", { method: "POST" });
+      setProgress(toc);
+      setResetState("done");
+      window.setTimeout(() => setResetState("idle"), 2500);
+    } catch {
+      setResetState("idle");
+    }
+  }
 
   const tried = progress?.sections?.filter(item => !item.slidesLocked) || [];
   const weak = tried.filter(item => !item.completed).slice(0, 3);
@@ -68,7 +82,19 @@ export default function HomePage({ onOpenDay }) {
             <h1>{greeting()} <span aria-hidden="true">👋</span></h1>
             <p>Chào mừng môn L3-L4 - Khóa 4 Phase 1. Còn 15 buổi, và {measured}</p>
           </div>
-          <button type="button" className="home-cta" onClick={() => onOpenDay(ACTIVE_DAY)}>Vào khóa học</button>
+          <div className="home-actions">
+            <button type="button" className="home-cta" onClick={() => onOpenDay(ACTIVE_DAY)}>Vào khóa học</button>
+            <button
+              type="button"
+              className={`home-reset ${resetState === "done" ? "done" : ""}`}
+              onClick={resetDemo}
+              disabled={resetState === "busy"}
+              title="Xóa tiến độ, phiên học và cache phân tích slide"
+            >
+              <Icon name="rotate" size={18} />
+              {resetState === "busy" ? "Đang xóa cache…" : resetState === "done" ? "Đã reset demo" : "Làm lại từ đầu"}
+            </button>
+          </div>
         </section>
 
         <section className="home-grid">
